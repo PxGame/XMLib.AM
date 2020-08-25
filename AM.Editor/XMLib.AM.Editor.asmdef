@@ -1,0 +1,19 @@
+{
+    "name": "XMLib.AM.Editor",
+    "references": [
+        "XMLib.AM",
+        "XMLib.Common",
+        "XMLib.Common.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

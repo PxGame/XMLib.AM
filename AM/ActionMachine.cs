@@ -18,9 +18,12 @@ namespace XMLib.AM
     public class ActionMachine : IActionMachine
     {
         public int waitFrameCnt { get; set; }
+        public int waitFrameDelay { get; set; }
         public int frameIndex { get; protected set; }
         public int globalFrameIndex { get; protected set; }
         public int stateBeginFrameIndex { get; protected set; }
+
+        public int animIndex { get; protected set; }
 
         public string configName { get; protected set; }
 
@@ -44,6 +47,7 @@ namespace XMLib.AM
         public IInputContainer input { get; protected set; }
 
         public string nextStateName { get; protected set; }
+        public int nextAnimaIndex { get; protected set; }
         public int nextStatePriority { get; protected set; }
 
         protected bool isCacheSConfigDirty;
@@ -53,10 +57,13 @@ namespace XMLib.AM
 
         private Dictionary<int, object> dataDict = new Dictionary<int, object>();
 
+        public string GetAnimName() => GetStateConfig().GetAnimName(animIndex);
+
         public MachineConfig GetMachineConfig()
         {
             return cacheMConfig ?? (cacheMConfig = ActionMachineHelper.GetMachineConfig(configName));
         }
+
 
         public StateConfig GetStateConfig()
         {
@@ -117,7 +124,7 @@ namespace XMLib.AM
             return loopCnt;
         }
 
-        public void ChangeState(string stateName, int priority = 0)
+        public void ChangeState(string stateName, int priority = 0, int animIndex = -1)
         {
             if (!string.IsNullOrEmpty(stateName) && priority < nextStatePriority)
             {
@@ -126,6 +133,7 @@ namespace XMLib.AM
 
             nextStateName = stateName;
             nextStatePriority = priority;
+            nextAnimaIndex = animIndex;
         }
 
         public void Initialize(string configName, object controller, IInputContainer input)
@@ -136,6 +144,7 @@ namespace XMLib.AM
             stateBeginFrameIndex = -1;
             nextStateName = null;
             nextStatePriority = 0;
+            nextAnimaIndex = -1;
 
             globalActionNodes = new List<ActionNode>();
             actionNodes = new List<ActionNode>();
@@ -152,6 +161,7 @@ namespace XMLib.AM
             stateName = mConfig.firstStateName;
             StateConfig sConfig = GetStateConfig();
             stateBeginFrameIndex = frameIndex + 1;
+            animIndex = sConfig.dafualtAnimIndex;
             isStateChanged = true;
             isFrameChanged = true;
             InitializeActions(actionNodes, sConfig.actions, 0);//初始化新的动作
@@ -167,6 +177,8 @@ namespace XMLib.AM
         public void LogicUpdate(float deltaTime)
         {
             InitializeValue();
+            UpdateState();
+            UpdateGlobalFrame(deltaTime);
             UpdateState();
             UpdateFrame(deltaTime);
         }
@@ -339,6 +351,15 @@ namespace XMLib.AM
             isStateChanged = globalFrameIndex < 0;//初始状态是改变
         }
 
+        private void UpdateGlobalFrame(float deltaTime)
+        {
+            //全局帧，不受顿帧影响
+            globalFrameIndex++;
+
+            //更新全局动作-不被顿帧影响
+            UpdateActions(globalActionNodes, deltaTime, globalFrameIndex);
+        }
+
         private void UpdateFrame(float deltaTime)
         {
             StateConfig sConfig = GetStateConfig();
@@ -347,13 +368,11 @@ namespace XMLib.AM
                 throw new RuntimeException("没有状态配置");
             }
 
-            //全局帧，不受顿帧影响
-            globalFrameIndex++;
-
-            //更新全局动作-不被顿帧影响
-            UpdateActions(globalActionNodes, deltaTime, globalFrameIndex);
-
-            if (waitFrameCnt > 0)
+            if (waitFrameDelay > 0)
+            {
+                waitFrameDelay--;
+            }
+            else if (waitFrameCnt > 0)
             { //顿帧
                 waitFrameCnt--;
                 return;
@@ -378,7 +397,7 @@ namespace XMLib.AM
 
             if (!sConfig.enableLoop && index + 1 == maxFrameCnt && string.IsNullOrEmpty(nextStateName))
             { //最后一帧
-                ChangeState(sConfig.nextStateName);
+                ChangeState(sConfig.nextStateName, animIndex:sConfig.nextAnimIndex);
             }
         }
 
@@ -393,6 +412,9 @@ namespace XMLib.AM
             stateBeginFrameIndex = frameIndex + 1;//状态起始帧
 
             StateConfig sConfig = GetStateConfig();
+
+            animIndex = nextAnimaIndex < 0 ? sConfig.dafualtAnimIndex : nextAnimaIndex;
+
             //释放已有动作
             DisposeActions(actionNodes);
             //初始化新的动作
@@ -400,6 +422,7 @@ namespace XMLib.AM
 
             nextStateName = null;
             nextStatePriority = 0;
+            nextAnimaIndex = -1;
 
             //状态改变
             isStateChanged = true;

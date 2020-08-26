@@ -38,13 +38,15 @@ namespace XMLib.AM
             EditorGUI.BeginChangeCheck();
 
             config.stateName = EditorGUILayoutEx.DrawObject("状态名", config.stateName);
-            config.animName = EditorGUILayoutEx.DrawObject("动画名", config.animName);
+            config.dafualtAnimIndex = EditorGUILayoutEx.DrawObject("默认动画序号", config.dafualtAnimIndex);
+            config.animNames = EditorGUILayoutEx.DrawObject("动画名", config.animNames);
             config.fadeTime = EditorGUILayoutEx.DrawObject("过度时间", config.fadeTime);
 
             config.enableLoop = EditorGUILayoutEx.DrawObject("循环", config.enableLoop);
             if (!config.enableLoop)
             {
                 config.nextStateName = EditorGUILayoutEx.DrawObject("下一个状态", config.nextStateName);
+                config.nextAnimIndex = EditorGUILayoutEx.DrawObject("下一个状态动画序号", config.nextAnimIndex);
             }
 
             if (EditorGUI.EndChangeCheck())

@@ -548,12 +548,12 @@ namespace XMLib.AM
             Animator animator = GetAnimator();
             var state = currentState;
 
-            if (animator == null || state == null || string.IsNullOrEmpty(state.animName))
+            if (animator == null || state == null || string.IsNullOrEmpty(state.defaultAnimaName))
             {
                 return null;
             }
 
-            return Array.Find(animator.runtimeAnimatorController.animationClips, t => string.Compare(state.animName, t.name) == 0);
+            return Array.Find(animator.runtimeAnimatorController.animationClips, t => string.Compare(state.defaultAnimaName, t.name) == 0);
         }
 
         #endregion Anima

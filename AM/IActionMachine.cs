@@ -20,14 +20,19 @@ namespace XMLib.AM
 
         bool isFrameChanged { get; }
         bool isStateChanged { get; }
+        int animIndex { get; }
+
 
         int frameIndex { get; }
         int stateBeginFrameIndex { get; }
 
         int waitFrameCnt { get; set; }
+        int waitFrameDelay { get; set; }
 
         string configName { get; }
         string stateName { get; }
+
+        string GetAnimName();
 
         MachineConfig GetMachineConfig();
 
@@ -45,7 +50,7 @@ namespace XMLib.AM
 
         void LogicUpdate(float delta);
 
-        void ChangeState(string stateName, int priority = 0);
+        void ChangeState(string stateName, int priority = 0, int animIndex = -1);
 
         #region data operations
 

@@ -16,14 +16,23 @@ namespace XMLib.AM
     public class StateConfig
     {
         public string stateName = "State";
-        public string animName = "Animation";
+        public List<string> animNames;
+        public int dafualtAnimIndex = 0;
         public float fadeTime = 0.05f;
         public bool enableLoop = false;
         public string nextStateName = "";
+        public int nextAnimIndex = -1;
 
         public List<FrameConfig> frames = new List<FrameConfig>();
         public List<object> actions = new List<object>();
 
         public override string ToString() => stateName;
+
+        public string defaultAnimaName => GetAnimName(dafualtAnimIndex);
+
+        public string GetAnimName(int index)
+        {
+            return animNames?.Count > index ? animNames[index] : string.Empty;
+        }
     }
 }

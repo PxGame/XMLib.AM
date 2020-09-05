@@ -37,11 +37,10 @@ namespace XMLib.AM
             }
         }
 
-        private List<ActionNode> globalActionNodes { get; set; }
-        private List<ActionNode> actionNodes { get; set; }
+        private List<ActionNode> globalActionNodes { get; set; } = new List<ActionNode>();
+        private List<ActionNode> actionNodes { get; set; } = new List<ActionNode>();
 
-        public bool isFrameChanged { get; protected set; }
-        public bool isStateChanged { get; protected set; }
+        public ActionMachineEvent eventTypes { get; protected set; }
 
         public object controller { get; protected set; }
         public IInputContainer input { get; protected set; }
@@ -59,11 +58,27 @@ namespace XMLib.AM
 
         public string GetAnimName() => GetStateConfig().GetAnimName(animIndex);
 
+        public void ChangeAnim(int animIndex, bool holdDuration = false)
+        {
+            throw new NotImplementedException("功能未测试通过，请勿调用");
+            this.animIndex = animIndex;
+
+            eventTypes |= ActionMachineEvent.AnimChanged;
+            eventTypes = holdDuration
+            ? eventTypes | ActionMachineEvent.HoldAnimDuration
+            : eventTypes & ~ActionMachineEvent.HoldAnimDuration;
+        }
+
+        public void ReplayAnim()
+        {
+            eventTypes |= ActionMachineEvent.AnimChanged;
+            eventTypes |= ~ActionMachineEvent.HoldAnimDuration;
+        }
+
         public MachineConfig GetMachineConfig()
         {
             return cacheMConfig ?? (cacheMConfig = ActionMachineHelper.GetMachineConfig(configName));
         }
-
 
         public StateConfig GetStateConfig()
         {
@@ -139,15 +154,24 @@ namespace XMLib.AM
         public void Initialize(string configName, object controller, IInputContainer input)
         {
             waitFrameCnt = 0;
+            waitFrameDelay = 0;
             frameIndex = -1;
             globalFrameIndex = -1;
             stateBeginFrameIndex = -1;
+            animIndex = 0;
             nextStateName = null;
             nextStatePriority = 0;
             nextAnimaIndex = -1;
+            eventTypes = ActionMachineEvent.None;
 
-            globalActionNodes = new List<ActionNode>();
-            actionNodes = new List<ActionNode>();
+            isCacheSConfigDirty = true;
+            cacheStateName = null;
+            cacheMConfig = null;
+            cacheSConfig = null;
+
+            globalActionNodes.Clear();
+            actionNodes.Clear();
+            dataDict.Clear();
 
             this.configName = configName;
             this.controller = controller;
@@ -162,9 +186,9 @@ namespace XMLib.AM
             StateConfig sConfig = GetStateConfig();
             stateBeginFrameIndex = frameIndex + 1;
             animIndex = sConfig.dafualtAnimIndex;
-            isStateChanged = true;
-            isFrameChanged = true;
-            InitializeActions(actionNodes, sConfig.actions, 0);//初始化新的动作
+
+            //初始化新的动作
+            InitializeActions(actionNodes, sConfig.actions, 0);
         }
 
         public void Destroy()
@@ -347,8 +371,12 @@ namespace XMLib.AM
 
         private void InitializeValue()
         {
-            isFrameChanged = false;
-            isStateChanged = globalFrameIndex < 0;//初始状态是改变
+            eventTypes = ActionMachineEvent.None;
+
+            if (globalFrameIndex < 0)
+            {//初始状态是改变
+                eventTypes |= (ActionMachineEvent.StateChanged | ActionMachineEvent.AnimChanged);
+            }
         }
 
         private void UpdateGlobalFrame(float deltaTime)
@@ -393,11 +421,11 @@ namespace XMLib.AM
             UpdateActions(actionNodes, deltaTime, index);
 
             //更新事件
-            isFrameChanged = true;
+            eventTypes |= ActionMachineEvent.FrameChanged;
 
             if (!sConfig.enableLoop && index + 1 == maxFrameCnt && string.IsNullOrEmpty(nextStateName))
             { //最后一帧
-                ChangeState(sConfig.nextStateName, animIndex:sConfig.nextAnimIndex);
+                ChangeState(sConfig.nextStateName, animIndex: sConfig.nextAnimIndex);
             }
         }
 
@@ -425,7 +453,7 @@ namespace XMLib.AM
             nextAnimaIndex = -1;
 
             //状态改变
-            isStateChanged = true;
+            eventTypes |= (ActionMachineEvent.StateChanged | ActionMachineEvent.AnimChanged);
         }
     }
 }

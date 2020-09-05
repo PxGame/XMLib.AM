@@ -9,6 +9,19 @@ using System;
 
 namespace XMLib.AM
 {
+
+    [Flags]
+    public enum ActionMachineEvent
+    {
+        None = 0b0000_0000,
+        FrameChanged = 0b0000_0001,
+        StateChanged = 0b0000_0010,
+        AnimChanged = 0b0000_0100,
+        HoldAnimDuration= 0b0000_1000,
+
+        All = 0b1111_1111
+    }
+
     /// <summary>
     /// IActionMachine
     /// </summary>
@@ -18,8 +31,8 @@ namespace XMLib.AM
 
         IInputContainer input { get; }
 
-        bool isFrameChanged { get; }
-        bool isStateChanged { get; }
+        ActionMachineEvent eventTypes { get; }
+
         int animIndex { get; }
 
 
@@ -51,6 +64,10 @@ namespace XMLib.AM
         void LogicUpdate(float delta);
 
         void ChangeState(string stateName, int priority = 0, int animIndex = -1);
+
+        void ChangeAnim(int animIndex, bool holdDuration = false);
+
+        void ReplayAnim();
 
         #region data operations
 

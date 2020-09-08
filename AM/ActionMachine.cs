@@ -61,12 +61,13 @@ namespace XMLib.AM
         public void ChangeAnim(int animIndex, bool holdDuration = false)
         {
             throw new NotImplementedException("功能未测试通过，请勿调用");
+            /*
             this.animIndex = animIndex;
-
             eventTypes |= ActionMachineEvent.AnimChanged;
             eventTypes = holdDuration
             ? eventTypes | ActionMachineEvent.HoldAnimDuration
             : eventTypes & ~ActionMachineEvent.HoldAnimDuration;
+            */
         }
 
         public void ReplayAnim()

@@ -17,9 +17,14 @@ namespace XMLib.AM
     {
         public TextAsset config;
         public Matrix4x4 localToWorldMatrix => transform.localToWorldMatrix;
+        public bool destroyOnPlay;
 
-        private void Awake() {
-            Destroy(gameObject);
+        private void Awake()
+        {
+            if (destroyOnPlay)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

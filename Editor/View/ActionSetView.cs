@@ -17,6 +17,7 @@ namespace XMLib.AM
     /// <summary>
     /// ActionSetView
     /// </summary>
+    [Serializable]
     public class ActionSetView : IView
     {
         public ActionEditorWindow win { get; set; }

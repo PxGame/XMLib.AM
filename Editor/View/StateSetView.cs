@@ -16,6 +16,7 @@ namespace XMLib.AM
     /// <summary>
     /// StateSetView
     /// </summary>
+    [Serializable]
     public class StateSetView : IDataView
     {
         public ActionEditorWindow win { get; set; }

@@ -15,6 +15,7 @@ namespace XMLib.AM
     /// <summary>
     /// StateListView
     /// </summary>
+    [Serializable]
     public class StateListView : IDataView
     {
         public ActionEditorWindow win { get; set; }
@@ -22,7 +23,7 @@ namespace XMLib.AM
         public string title => "状态列表";
         public bool useAre => true;
 
-        public Vector2 scrollPos;
+        private Vector2 scrollPos;
 
         public void OnGUI(Rect rect)
         {

@@ -13,7 +13,7 @@ namespace XMLib.AM
     /// <summary>
     /// RangeConfig
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class RangeConfig
     {
         #region data
@@ -23,6 +23,7 @@ namespace XMLib.AM
             IItem Clone();
         }
 
+        [Serializable]
         public class RectItem : IItem
         {
             public Vector2 offset = Vector2.up;
@@ -38,6 +39,7 @@ namespace XMLib.AM
             }
         }
 
+        [Serializable]
         public class CircleItem : IItem
         {
             public Vector2 offset = Vector2.up;
@@ -53,6 +55,7 @@ namespace XMLib.AM
             }
         }
 
+        [Serializable]
         public class BoxItem : IItem
         {
             public Vector3 offset = Vector3.up;
@@ -68,6 +71,7 @@ namespace XMLib.AM
             }
         }
 
+        [Serializable]
         public class SphereItem : IItem
         {
             public Vector3 offset = Vector3.up;
@@ -86,6 +90,8 @@ namespace XMLib.AM
         #endregion data
 
         [ObjectTypes(typeof(RectItem), typeof(CircleItem), typeof(BoxItem), typeof(SphereItem))]
+        
+        [SerializeReference]
         public IItem value;
 
         public Type GetValueType() => value?.GetType() ?? null;

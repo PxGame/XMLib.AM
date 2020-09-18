@@ -18,6 +18,7 @@ namespace XMLib.AM
     /// <summary>
     /// FrameListView
     /// </summary>
+    [Serializable]
     public class FrameListView : IView
     {
         public ActionEditorWindow win { get; set; }

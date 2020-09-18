@@ -16,6 +16,7 @@ namespace XMLib.AM
     /// <summary>
     /// AttackRangeListView
     /// </summary>
+    [Serializable]
     public class AttackRangeListView : IDataView
     {
         public ActionEditorWindow win { get; set; }
@@ -23,7 +24,7 @@ namespace XMLib.AM
         public string title => "攻击范围";
 
         public bool useAre => true;
-        public Vector2 scrollPos;
+        private Vector2 scrollPos;
 
         public void OnGUI(Rect rect)
         {

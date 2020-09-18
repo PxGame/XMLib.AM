@@ -94,18 +94,19 @@ namespace XMLib.AM
             public ToolView.Setting toolView = new ToolView.Setting();
         }
 
-        public readonly ActionListView actionListView;
-        public readonly ActionSetView actionSetView;
-        public readonly GlobalActionListView globalActionListView;
-        public readonly GlobalActionSetView globalActionSetView;
-        public readonly AttackRangeListView attackRangeListView;
-        public readonly BodyRangeListView bodyRangeListView;
-        public readonly FrameListView frameListView;
-        public readonly StateListView stateListView;
-        public readonly StateSetView stateSetView;
-        public readonly MenuView menuView;
-        public readonly ToolView toolView;
+        [NonSerialized] public readonly ActionListView actionListView;
+        [NonSerialized] public readonly ActionSetView actionSetView;
+        [NonSerialized] public readonly GlobalActionListView globalActionListView;
+        [NonSerialized] public readonly GlobalActionSetView globalActionSetView;
+        [NonSerialized] public readonly AttackRangeListView attackRangeListView;
+        [NonSerialized] public readonly BodyRangeListView bodyRangeListView;
+        [NonSerialized] public readonly FrameListView frameListView;
+        [NonSerialized] public readonly StateListView stateListView;
+        [NonSerialized] public readonly StateSetView stateSetView;
+        [NonSerialized] public readonly MenuView menuView;
+        [NonSerialized] public readonly ToolView toolView;
 
+        [SerializeReference]
         private List<IView> views = new List<IView>();
 
         private readonly SceneGUIDrawer guiDrawer;
@@ -142,10 +143,10 @@ namespace XMLib.AM
 
         public bool isRunning => EditorApplication.isPlaying;
 
-        [NonSerialized] public GameObject actionMachineObj = null;
-        [NonSerialized] public ActionMachineTest actionMachine = null;
-        [NonSerialized] public TextAsset configAsset = null;
-        [NonSerialized] public MachineConfig config;
+        public GameObject actionMachineObj = null;
+        public ActionMachineTest actionMachine = null;
+        public TextAsset configAsset = null;
+        public MachineConfig config;
 
         #endregion raw data
 
@@ -416,9 +417,12 @@ namespace XMLib.AM
         private void OnGUI()
         {
             Check();
+
+            Undo.RecordObject(this, "ActionEditorWindow");
             AEStyles.Begin();
             Draw();
             AEStyles.End();
+
             UpdateActionMachine();
 
             quickButtonHandler.OnGUI();
@@ -486,6 +490,9 @@ namespace XMLib.AM
             {
                 return;
             }
+            
+            Undo.RecordObject(this, "ActionEditorWindow");
+
             AEStyles.Begin();
             guiDrawer.OnSceneGUI(sceneView);
             quickButtonHandler.OnSceneGUI(sceneView);
@@ -804,8 +811,17 @@ namespace XMLib.AM
             }
 
             #endregion draw
+
+            Event evt = Event.current;
+            if (evt.isMouse && evt.type == EventType.MouseDown && rect.Contains(Event.current.mousePosition))
+            {
+                evt.Use();
+                GUI.FocusControl(null);
+            }
         }
 
         #endregion Draw view
+
+
     }
 }

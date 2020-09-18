@@ -5,6 +5,8 @@
  * 创建时间: 2019/11/21 11:39:30
  */
 
+using System;
+
 namespace XMLib.AM
 {
     /// <summary>
@@ -25,6 +27,7 @@ namespace XMLib.AM
         bool EnableLoop();
     }
 
+    [Serializable]
     public abstract class HoldFrames : IHoldFrames
     {
         #region IHoldFrames

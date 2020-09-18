@@ -16,12 +16,14 @@ namespace XMLib.AM
     /// <summary>
     /// MenuView
     /// </summary>
+    [Serializable]
     public class MenuView : IView
     {
         public ActionEditorWindow win { get; set; }
 
         public string title => string.Empty;
         public bool useAre => true;
+        private string selectConfigName;
 
         public void OnGUI(Rect rect)
         {
@@ -90,7 +92,6 @@ namespace XMLib.AM
             }
         }
 
-        public string selectConfigName;
 
         private void PlayMode()
         {

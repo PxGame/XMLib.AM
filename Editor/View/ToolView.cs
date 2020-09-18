@@ -16,6 +16,7 @@ namespace XMLib.AM
     /// <summary>
     /// ToolView
     /// </summary>
+    [Serializable]
     public class ToolView : IView
     {
         [Serializable]

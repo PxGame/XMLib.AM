@@ -16,6 +16,7 @@ namespace XMLib.AM
     /// <summary>
     /// BodyRangeListView
     /// </summary>
+    [Serializable]
     public class BodyRangeListView : IDataView
     {
         public ActionEditorWindow win { get; set; }
@@ -23,7 +24,7 @@ namespace XMLib.AM
         public string title => "身体范围";
 
         public bool useAre => true;
-        public Vector2 scrollPos;
+        private Vector2 scrollPos;
 
         public void OnGUI(Rect rect)
         {

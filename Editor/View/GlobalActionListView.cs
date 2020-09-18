@@ -16,6 +16,7 @@ namespace XMLib.AM
     /// <summary>
     /// GlobalActionListView
     /// </summary>
+    [Serializable]
     public class GlobalActionListView : IView
     {
         public ActionEditorWindow win { get; set; }
@@ -23,7 +24,7 @@ namespace XMLib.AM
         public string title => "全局动作列表";
         public bool useAre => true;
 
-        public Vector2 scrollPos;
+        private Vector2 scrollPos;
 
         public void OnGUI(Rect rect)
         {

@@ -6,6 +6,7 @@
  */
 
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace XMLib.AM
 {
@@ -24,6 +25,9 @@ namespace XMLib.AM
         public int nextAnimIndex = -1;
 
         public List<FrameConfig> frames = new List<FrameConfig>();
+
+        
+        [SerializeReference]
         public List<object> actions = new List<object>();
 
         public override string ToString() => stateName;

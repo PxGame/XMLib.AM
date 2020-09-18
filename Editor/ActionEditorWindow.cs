@@ -419,13 +419,26 @@ namespace XMLib.AM
             Check();
 
             Undo.RecordObject(this, "ActionEditorWindow");
+
             AEStyles.Begin();
             Draw();
             AEStyles.End();
-
             UpdateActionMachine();
 
+            EventProcess();
+
             quickButtonHandler.OnGUI();
+        }
+
+        private void EventProcess()
+        {
+            Rect rect = position;
+
+            Event evt = Event.current;
+            if (!rect.Contains(Event.current.mousePosition))
+            {
+                return;
+            }
         }
 
         private void Check()
@@ -490,7 +503,7 @@ namespace XMLib.AM
             {
                 return;
             }
-            
+
             Undo.RecordObject(this, "ActionEditorWindow");
 
             AEStyles.Begin();
@@ -811,13 +824,6 @@ namespace XMLib.AM
             }
 
             #endregion draw
-
-            Event evt = Event.current;
-            if (evt.isMouse && evt.type == EventType.MouseDown && rect.Contains(Event.current.mousePosition))
-            {
-                evt.Use();
-                GUI.FocusControl(null);
-            }
         }
 
         #endregion Draw view

@@ -25,6 +25,8 @@ namespace XMLib.AM
         public string title => "全局动作设置";
         public bool useAre => true;
 
+        private Vector2 scrollView = Vector2.zero;
+
         public void OnGUI(Rect rect)
         {
             object obj = win.currentGlobalAction;
@@ -33,18 +35,9 @@ namespace XMLib.AM
                 return;
             }
 
-            Type type = obj.GetType();
-
-            FieldInfo[] fieldInfos = type.GetFields();
-            foreach (var fieldInfo in fieldInfos)
-            {
-                DrawField(obj, fieldInfo);
-            }
-        }
-
-        private void DrawField(object obj, FieldInfo fieldInfo)
-        {
-            EditorGUILayoutEx.DrawField(obj, fieldInfo);
+            scrollView = EditorGUILayout.BeginScrollView(scrollView);
+            EditorGUILayoutEx.DrawObject(GUIContent.none, obj, obj.GetType());
+            EditorGUILayout.EndScrollView();
         }
 
         public void OnUpdate()

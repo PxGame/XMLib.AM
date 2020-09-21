@@ -37,7 +37,7 @@ namespace XMLib.AM
             }
 
             scrollView = EditorGUILayout.BeginScrollView(scrollView);
-            obj = EditorGUILayoutEx.DrawObject(GUIContent.none, obj, obj.GetType());
+            EditorGUILayoutEx.DrawObject(GUIContent.none, obj, obj.GetType());
             EditorGUILayout.EndScrollView();
 
             /*

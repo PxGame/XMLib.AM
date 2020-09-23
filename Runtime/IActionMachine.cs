@@ -17,7 +17,7 @@ namespace XMLib.AM
         FrameChanged = 0b0000_0001,
         StateChanged = 0b0000_0010,
         AnimChanged = 0b0000_0100,
-        HoldAnimDuration= 0b0000_1000,
+        HoldAnimDuration = 0b0000_1000,
 
         All = 0b1111_1111
     }
@@ -70,22 +70,7 @@ namespace XMLib.AM
         void ReplayAnim();
 
         #region data operations
-
-        object this[int tag] { get; set; }
-
-        void SetData(int tag, object data);
-
-        bool RemoveData(int tag);
-
-        bool GetData<T>(int tag, out T data);
-
-        bool GetData(int tag, Type type, out object data);
-
-        T GetData<T>(int tag);
-
-        T GetData<T>(int tag, T defaultValue);
-
-        void ClearData();
+        DataDictionary<int, object> datas { get; }
 
         #endregion data operations
     }

@@ -54,7 +54,7 @@ namespace XMLib.AM
         protected MachineConfig cacheMConfig;
         protected StateConfig cacheSConfig;
 
-        private Dictionary<int, object> dataDict = new Dictionary<int, object>();
+        public DataDictionary<int, object> datas { get; protected set; } = new DataDictionary<int, object>();
 
         public string GetAnimName() => GetStateConfig().GetAnimName(animIndex);
 
@@ -172,7 +172,7 @@ namespace XMLib.AM
 
             globalActionNodes.Clear();
             actionNodes.Clear();
-            dataDict.Clear();
+            datas.Clear();
 
             this.configName = configName;
             this.controller = controller;
@@ -196,7 +196,7 @@ namespace XMLib.AM
         {
             DisposeActions(actionNodes);
             DisposeActions(globalActionNodes);
-            ClearData();
+            datas.Clear();
         }
 
         public void LogicUpdate(float deltaTime)
@@ -207,83 +207,6 @@ namespace XMLib.AM
             UpdateState();
             UpdateFrame(deltaTime);
         }
-
-        #region data operations
-
-        public object this[int tag]
-        {
-            get => dataDict.TryGetValue(tag, out object value) ? value : null;
-            set => dataDict[tag] = value;
-        }
-
-        public void SetData(int tag, object data)
-        {
-            dataDict[tag] = data;
-        }
-
-        public bool RemoveData(int tag)
-        {
-            return dataDict.Remove(tag);
-        }
-
-        public bool GetData<T>(int tag, out T data)
-        {
-            if (dataDict.TryGetValue(tag, out object result))
-            {
-                try
-                {
-                    data = (T)result.ConvertTo(typeof(T));
-                }
-                catch (Exception)
-                {
-                    data = default(T);
-                    return false;
-                }
-
-                return true;
-            }
-
-            data = default(T);
-            return false;
-        }
-
-        public bool GetData(int tag, Type type, out object data)
-        {
-            if (dataDict.TryGetValue(tag, out object result))
-            {
-                try
-                {
-                    data = Convert.ChangeType(result, type);
-                }
-                catch (Exception)
-                {
-                    data = null;
-                    return false;
-                }
-
-                return true;
-            }
-
-            data = null;
-            return false;
-        }
-
-        public T GetData<T>(int tag)
-        {
-            return GetData<T>(tag, out T data) ? data : default(T);
-        }
-
-        public T GetData<T>(int tag, T defaultValue)
-        {
-            return GetData<T>(tag, out T data) ? data : defaultValue;
-        }
-
-        public void ClearData()
-        {
-            dataDict.Clear();
-        }
-
-        #endregion data operations
 
         #region action operations
 

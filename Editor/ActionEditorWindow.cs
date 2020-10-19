@@ -119,8 +119,8 @@ namespace XMLib.AM
         private readonly float menuViewRectHeight = 26f;
         private readonly float stateListViewRectWidth = 150f;
         private readonly float stateSetViewRectWidth = 200f;
-        private readonly float bodyRangeListViewRectWidth = 180f;
-        private readonly float attackRangeListViewRectWidth = 180f;
+        private readonly float bodyRangeListViewRectWidth = 200f;
+        private readonly float attackRangeListViewRectWidth = 200f;
         private readonly float actionListViewRectWidth = 180f;
         private readonly float actionSetViewRectWidth = 300f;
         private readonly float globalActionListViewRectWidth = 180f;
@@ -718,50 +718,46 @@ namespace XMLib.AM
             height -= frameListViewRectHeight;
 
             float itemHeight = height - scrollHeight;
+            float nextPosX = startPosX;
+            float nextPosY = startPosY;
 
             if ((setting.showView & ViewType.Tool) != 0)
             {
                 toolViewRect = new Rect(
-                    startPosX + space,
-                    startPosY + space,
+                    nextPosX + space,
+                    nextPosY + space,
                     toolViewRectWidth - space,
-                    height - space * 2);
-                startPosX += toolViewRectWidth;
-                width -= toolViewRectWidth;
+                    itemHeight - space * 2);
+                nextPosX += toolViewRectWidth;
             }
 
             if ((setting.showView & ViewType.StateSet) != 0)
             {
                 stateSetViewRect = new Rect(
-                    startPosX + space,
-                    startPosY + space,
+                    nextPosX + space,
+                    nextPosY + space,
                     stateSetViewRectWidth - space,
-                    height - space * 2);
-                startPosX += stateSetViewRectWidth;
-                width -= stateSetViewRectWidth;
+                    itemHeight - space * 2);
+                nextPosX += stateSetViewRectWidth;
             }
 
             if ((setting.showView & ViewType.Action) != 0)
             {
                 actionListViewRect = new Rect(
-                    startPosX + space,
-                    startPosY + space,
+                    nextPosX + space,
+                    nextPosY + space,
                     actionListViewRectWidth - space,
-                    height - space * 2);
-                startPosX += actionListViewRectWidth;
-                width -= actionListViewRectWidth;
+                    itemHeight - space * 2);
+                nextPosX += actionListViewRectWidth;
 
                 actionSetViewRect = new Rect(
-                    startPosX + space,
-                    startPosY + space,
+                    nextPosX + space,
+                    nextPosY + space,
                     actionSetViewRectWidth - space,
-                    height - space * 2);
-                startPosX += actionSetViewRectWidth;
-                width -= actionSetViewRectWidth;
+                    itemHeight - space * 2);
+                nextPosX += actionSetViewRectWidth;
             }
 
-            float nextPosX = startPosX;
-            float nextPosY = startPosY;
             if ((setting.showView & ViewType.Other) != 0)
             {
                 attackRangeListViewRect = new Rect(
@@ -791,6 +787,16 @@ namespace XMLib.AM
                 DrawView(stateListView, stateListViewRect);
             }
 
+            if ((setting.showView & ViewType.GlobalAction) != 0)
+            {
+                DrawView(globalActionSetView, globalActionSetViewRect);
+                DrawView(globalActionListView, globalActionListViewRect);
+            }
+
+            Rect position = new Rect(startPosX + space, startPosY, width - space, height);
+            Rect view = new Rect(startPosX + space, startPosY, nextPosX - startPosX - space, itemHeight);
+            setting.otherViewScrollPos = GUI.BeginScrollView(position, setting.otherViewScrollPos, view, true, false);
+
             if ((setting.showView & ViewType.StateSet) != 0)
             {
                 DrawView(stateSetView, stateSetViewRect);
@@ -801,12 +807,6 @@ namespace XMLib.AM
                 DrawView(toolView, toolViewRect);
             }
 
-            if ((setting.showView & ViewType.GlobalAction) != 0)
-            {
-                DrawView(globalActionSetView, globalActionSetViewRect);
-                DrawView(globalActionListView, globalActionListViewRect);
-            }
-
             if ((setting.showView & ViewType.Action) != 0)
             {
                 DrawView(actionListView, actionListViewRect);
@@ -815,19 +815,14 @@ namespace XMLib.AM
 
             if ((setting.showView & ViewType.Other) != 0)
             {
-                Rect position = new Rect(startPosX + space, startPosY, width - space, height);
-                Rect view = new Rect(startPosX + space, startPosY, nextPosX - startPosX - space, itemHeight);
-                setting.otherViewScrollPos = GUI.BeginScrollView(position, setting.otherViewScrollPos, view, true, false);
                 DrawView(attackRangeListView, attackRangeListViewRect);
                 DrawView(bodyRangeListView, bodyRangeListViewRect);
-                GUI.EndScrollView();
             }
+            GUI.EndScrollView();
 
             #endregion draw
         }
 
         #endregion Draw view
-
-
     }
 }

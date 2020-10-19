@@ -20,12 +20,20 @@
     ```json
     {
         "dependencies": {
-                "com.peterxiang.xmlib.am": "https://github.com/PxGame/XMLib.AM.git",
-                "com.peterxiang.xmlib.common": "https://github.com/PxGame/XMLib.Common.git",
                 "com.peterxiang.xmlib.thirdparty": "https://github.com/PxGame/XMLib.ThirdParty.git",
+                "com.peterxiang.xmlib.common": "https://github.com/PxGame/XMLib.Common.git",
+                "com.peterxiang.xmlib.am": "https://github.com/PxGame/XMLib.AM.git"
         }
     }
     ```
+
+## 操作界面
+
+ - 数据编辑窗口
+ ![编辑器界面](./Documentation~/主编辑器.jpg)
+
+ - 受击框和攻击框编辑工具
+ ![碰撞体编辑界面](./Documentation~/碰撞体编辑.jpg)
 
 ## 技术交流
 

@@ -46,7 +46,7 @@ namespace XMLib.AM
         {
             Event evt = Event.current;
 
-            if (GUILayout.Button("保存(Ctrl+S)", GUILayout.Width(80)))
+            if (GUILayout.Button("保存", GUILayout.Width(80)))
             {
                 SaveConfig();
                 GUI.FocusControl(null);
@@ -91,7 +91,6 @@ namespace XMLib.AM
                 CreateNew();
             }
         }
-
 
         private void PlayMode()
         {

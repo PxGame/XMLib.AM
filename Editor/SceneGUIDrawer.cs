@@ -55,43 +55,49 @@ namespace XMLib.AM
 
         private void ProcessRanges(List<RangeConfig> ranges, Matrix4x4 localToWorld, bool enableControl, int selectIndex, Color color)
         {
+            Matrix4x4 localToWorldNoScale = Matrix4x4.TRS(localToWorld.MultiplyPoint3x4(Vector3.zero), localToWorld.rotation, Vector3.one);
+
+            Matrix4x4 oldMat = Handles.matrix;
+            Handles.matrix = localToWorldNoScale;
+
             int length = ranges.Count;
             for (int i = 0; i < length; i++)
             {
                 RangeConfig config = ranges[i];
-                DrawRange(i, config, localToWorld, color);
+                DrawRange(i, config, color);
 
                 if (enableControl && (win.setting.enableAllControl || (selectIndex == i)))
                 {
-                    ControlRange(i, config.value, localToWorld);
+                    ControlRange(i, config.value);
                 }
             }
+
+            Handles.matrix = oldMat;
         }
 
-        private void DrawRange(int index, RangeConfig config, Matrix4x4 localToWorld, Color color)
+        private void DrawRange(int index, RangeConfig config, Color color)
         {
             HandlesDrawer.H.PushAndSetColor(color);
-            HandlesDrawer.H.fillConvexHull = true;
+            HandlesDrawer.H.fillColor = true;
             switch (config.value)
             {
                 case RangeConfig.RectItem v:
-                    HandlesDrawer.H.DrawRect(v.size, localToWorld * Matrix4x4.Translate(v.offset));
+                    HandlesDrawer.H.DrawRect(v.size, Matrix4x4.Translate(v.offset));
                     break;
 
                 case RangeConfig.CircleItem v:
-                    HandlesDrawer.H.DrawCircle(v.radius, localToWorld * Matrix4x4.Translate(v.offset));
+                    HandlesDrawer.H.DrawCircle(v.radius, Matrix4x4.Translate(v.offset));
                     break;
 
                 case RangeConfig.BoxItem v:
-
-                    HandlesDrawer.H.DrawBox(v.size, localToWorld * Matrix4x4.Translate(v.offset));
+                    HandlesDrawer.H.DrawBox(v.size, Matrix4x4.Translate(v.offset));
                     break;
 
                 case RangeConfig.SphereItem v:
-                    HandlesDrawer.H.DrawSphere(v.radius, localToWorld * Matrix4x4.Translate(v.offset));
+                    HandlesDrawer.H.DrawSphere(v.radius, Matrix4x4.Translate(v.offset));
                     break;
             }
-            HandlesDrawer.H.fillConvexHull = false;
+            HandlesDrawer.H.fillColor = false;
             HandlesDrawer.H.PopColor();
         }
 
@@ -103,45 +109,40 @@ namespace XMLib.AM
         private BoxBoundsHandle boxHandle = new BoxBoundsHandle();
         private SphereBoundsHandle sphereHandle = new SphereBoundsHandle();
 
-        private void ControlRange(int index, RangeConfig.IItem config, Matrix4x4 localToWorld)
+        private void ControlRange(int index, RangeConfig.IItem config)
         {
-            Matrix4x4 worldToLocal = localToWorld.inverse;
-
-            Vector3 worldPos = Vector3.zero;
-            Vector3 worldSize = Vector3.zero;
-            Quaternion worldRotate = Quaternion.identity;
+            Vector3 offset = Vector3.zero;
+            Vector3 size = Vector3.zero;
 
             switch (config)
             {
                 case RangeConfig.RectItem v:
-                    worldPos = localToWorld.MultiplyPoint(v.offset);
-                    worldSize = (Vector2)v.size;
+                    offset = v.offset;
+                    size = v.size;
                     break;
 
                 case RangeConfig.CircleItem v:
-                    worldPos = localToWorld.MultiplyPoint(v.offset);
-                    worldSize = new Vector2((float)v.radius, 0f);
+                    offset = v.offset;
+                    size = new Vector3(v.radius, 0f, 0f);
                     break;
 
                 case RangeConfig.BoxItem v:
-                    worldPos = localToWorld.MultiplyPoint(v.offset);
-                    worldSize = v.size;
+                    offset = v.offset;
+                    size = v.size;
                     break;
 
                 case RangeConfig.SphereItem v:
-                    worldPos = localToWorld.MultiplyPoint(v.offset);
-                    worldSize = new Vector2((float)v.radius, 0f);
+                    offset = v.offset;
+                    size = new Vector2(v.radius, 0f);
                     break;
 
                 default:
                     return;
             }
 
-            float handleSize = HandleUtility.GetHandleSize(worldPos);
+            //draw handle =========================================
 
-            //draw handle
-            bool useOffset = false;
-            bool useSize = false;
+            float handleSize = HandleUtility.GetHandleSize(offset);
 
             switch (Tools.current)
             {
@@ -149,19 +150,15 @@ namespace XMLib.AM
                     break;
 
                 case Tool.Move:
-                    worldPos = Handles.DoPositionHandle(worldPos, worldRotate);
-                    useOffset = true;
+                    offset = Handles.DoPositionHandle(offset, Quaternion.identity);
                     break;
 
                 case Tool.Scale:
-                    worldSize = Handles.DoScaleHandle(worldSize, worldPos, worldRotate, handleSize);
-                    useSize = true;
+                    size = Handles.DoScaleHandle(size, offset, Quaternion.identity, handleSize);
                     break;
 
                 case Tool.Transform:
-                    Handles.TransformHandle(ref worldPos, Quaternion.identity, ref worldSize);
-                    useSize = true;
-                    useOffset = true;
+                    Handles.TransformHandle(ref offset, Quaternion.identity, ref size);
                     break;
 
                 case Tool.Rect:
@@ -171,50 +168,42 @@ namespace XMLib.AM
                         case RangeConfig.RectItem v:
                             {
                                 boxHandle.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y;
-                                boxHandle.center = worldPos;
-                                boxHandle.size = worldSize;
+                                boxHandle.center = offset;
+                                boxHandle.size = size;
                                 boxHandle.DrawHandle();
-                                worldPos = boxHandle.center;
-                                worldSize = boxHandle.size;
-                                useOffset = true;
-                                useSize = true;
+                                offset = boxHandle.center;
+                                size = boxHandle.size;
                                 break;
                             }
 
                         case RangeConfig.CircleItem v:
                             {
                                 sphereHandle.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y;
-                                sphereHandle.center = worldPos;
-                                sphereHandle.radius = worldSize.x;
+                                sphereHandle.center = offset;
+                                sphereHandle.radius = size.x;
                                 sphereHandle.DrawHandle();
-                                worldPos = sphereHandle.center;
-                                worldSize.x = sphereHandle.radius;
-                                useOffset = true;
-                                useSize = true;
+                                offset = sphereHandle.center;
+                                size.x = sphereHandle.radius;
                                 break;
                             }
                         case RangeConfig.BoxItem v:
                             {
                                 boxHandle.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y | PrimitiveBoundsHandle.Axes.Z;
-                                boxHandle.center = worldPos;
-                                boxHandle.size = worldSize;
+                                boxHandle.center = offset;
+                                boxHandle.size = size;
                                 boxHandle.DrawHandle();
-                                worldPos = boxHandle.center;
-                                worldSize = boxHandle.size;
-                                useOffset = true;
-                                useSize = true;
+                                offset = boxHandle.center;
+                                size = boxHandle.size;
                                 break;
                             }
                         case RangeConfig.SphereItem v:
                             {
                                 sphereHandle.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y | PrimitiveBoundsHandle.Axes.Z;
-                                sphereHandle.center = worldPos;
-                                sphereHandle.radius = worldSize.x;
+                                sphereHandle.center = offset;
+                                sphereHandle.radius = size.x;
                                 sphereHandle.DrawHandle();
-                                worldPos = sphereHandle.center;
-                                worldSize.x = sphereHandle.radius;
-                                useOffset = true;
-                                useSize = true;
+                                offset = sphereHandle.center;
+                                size.x = sphereHandle.radius;
                                 break;
                             }
                     }
@@ -222,47 +211,32 @@ namespace XMLib.AM
                     break;
             }
 
-            Func<Vector3> getOffset = () =>
-            {
-                Vector3 offset = worldToLocal.MultiplyPoint(worldPos);
-                offset.x = FixFloat(offset.x);
-                offset.y = FixFloat(offset.y);
-                offset.z = FixFloat(offset.z);
-                return offset;
-            };
+            //===============================================
 
-            Func<Vector3> getSize = () =>
-             {
-                 Vector3 size = new Vector3(FixFloat(worldSize.x), FixFloat(worldSize.y), FixFloat(worldSize.z));
-                 return size;
-             };
-
-            Func<float> getRadius = () =>
-            {
-                float radius = FixFloat(worldSize.magnitude);
-                return radius;
-            };
+            Func<Vector3> getOffset = () => new Vector3(FixFloat(offset.x), FixFloat(offset.y), FixFloat(offset.z));
+            Func<Vector3> getSize = () => new Vector3(FixFloat(size.x), FixFloat(size.y), FixFloat(size.z));
+            Func<float> getRadius = () => FixFloat(size.magnitude);
 
             switch (config)
             {
                 case RangeConfig.RectItem v:
-                    v.offset = useOffset ? (Vector2)getOffset() : v.offset;
-                    v.size = useSize ? (Vector2)getSize() : v.size;
+                    v.offset = getOffset();
+                    v.size = getSize();
                     break;
 
                 case RangeConfig.CircleItem v:
-                    v.offset = useOffset ? (Vector2)getOffset() : v.offset;
-                    v.radius = useSize ? getRadius() : v.radius;
+                    v.offset = getOffset();
+                    v.radius = getRadius();
                     break;
 
                 case RangeConfig.BoxItem v:
-                    v.offset = useOffset ? getOffset() : v.offset;
-                    v.size = useSize ? getSize() : v.size;
+                    v.offset = getOffset();
+                    v.size = getSize();
                     break;
 
                 case RangeConfig.SphereItem v:
-                    v.offset = useOffset ? getOffset() : v.offset;
-                    v.radius = useSize ? getRadius() : v.radius;
+                    v.offset = getOffset();
+                    v.radius = getRadius();
                     break;
             }
         }

@@ -395,23 +395,15 @@ namespace XMLib.AM
 
         private void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            /*
             switch (state)
             {
-                case PlayModeStateChange.ExitingEditMode:
-
-                    if (isConfigValid && EditorUtility.DisplayDialog("动作编辑器提示", "是否立即保存配置？\n如果未保存，运行时则会丢失当前修改。", "是", "否"))
-                    {
-                        menuView.SaveConfig();
-                    }
-
+                case PlayModeStateChange.EnteredPlayMode:
                     actionMachineObj = null;
                     actionMachine = null;
                     configAsset = null;
                     config = null;
                     break;
             }
-            */
         }
 
         private void OnGUI()

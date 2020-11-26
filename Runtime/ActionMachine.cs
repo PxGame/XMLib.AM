@@ -43,7 +43,6 @@ namespace XMLib.AM
         public ActionMachineEvent eventTypes { get; protected set; }
 
         public object controller { get; protected set; }
-        public IInputContainer input { get; protected set; }
 
         public string nextStateName { get; protected set; }
         public int nextAnimaIndex { get; protected set; }
@@ -53,8 +52,6 @@ namespace XMLib.AM
         protected string cacheStateName;
         protected MachineConfig cacheMConfig;
         protected StateConfig cacheSConfig;
-
-        public DataDictionary<int, object> datas { get; protected set; } = new DataDictionary<int, object>();
 
         public string GetAnimName() => GetStateConfig().GetAnimName(animIndex);
 
@@ -152,7 +149,7 @@ namespace XMLib.AM
             nextAnimaIndex = animIndex;
         }
 
-        public void Initialize(string configName, object controller, IInputContainer input)
+        public void Initialize(string configName, object controller)
         {
             waitFrameCnt = 0;
             waitFrameDelay = 0;
@@ -172,11 +169,9 @@ namespace XMLib.AM
 
             globalActionNodes.Clear();
             actionNodes.Clear();
-            datas.Clear();
 
             this.configName = configName;
             this.controller = controller;
-            this.input = input;
 
             //初始化全局动作
             MachineConfig mConfig = GetMachineConfig();
@@ -196,7 +191,6 @@ namespace XMLib.AM
         {
             DisposeActions(actionNodes);
             DisposeActions(globalActionNodes);
-            datas.Clear();
         }
 
         public void LogicUpdate(float deltaTime)

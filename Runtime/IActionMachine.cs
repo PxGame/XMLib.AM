@@ -9,7 +9,6 @@ using System;
 
 namespace XMLib.AM
 {
-
     [Flags]
     public enum ActionMachineEvent
     {
@@ -29,12 +28,9 @@ namespace XMLib.AM
     {
         object controller { get; }
 
-        IInputContainer input { get; }
-
         ActionMachineEvent eventTypes { get; }
 
         int animIndex { get; }
-
 
         int frameIndex { get; }
         int stateBeginFrameIndex { get; }
@@ -57,7 +53,7 @@ namespace XMLib.AM
 
         int GetStateLoopCnt();
 
-        void Initialize(string config, object controller, IInputContainer input);
+        void Initialize(string config, object controller);
 
         void Destroy();
 
@@ -68,10 +64,5 @@ namespace XMLib.AM
         void ChangeAnim(int animIndex, bool holdDuration = false);
 
         void ReplayAnim();
-
-        #region data operations
-        DataDictionary<int, object> datas { get; }
-
-        #endregion data operations
     }
 }

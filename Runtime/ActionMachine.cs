@@ -24,6 +24,7 @@ namespace XMLib.AM
         public int stateBeginFrameIndex { get; protected set; }
 
         public int animIndex { get; protected set; }
+        public float animStartTime { get; set; }
 
         public string configName { get; protected set; }
 
@@ -45,7 +46,8 @@ namespace XMLib.AM
         public object controller { get; protected set; }
 
         public string nextStateName { get; protected set; }
-        public int nextAnimaIndex { get; protected set; }
+        public int nextAnimIndex { get; protected set; }
+        public float nextAnimStartTime { get; protected set; }
         public int nextStatePriority { get; protected set; }
 
         protected bool isCacheSConfigDirty;
@@ -137,7 +139,7 @@ namespace XMLib.AM
             return loopCnt;
         }
 
-        public void ChangeState(string stateName, int priority = 0, int animIndex = -1)
+        public void ChangeState(string stateName, int priority = 0, int animIndex = -1, float animStartTime = 0f)
         {
             if (!string.IsNullOrEmpty(stateName) && priority < nextStatePriority)
             {
@@ -146,7 +148,8 @@ namespace XMLib.AM
 
             nextStateName = stateName;
             nextStatePriority = priority;
-            nextAnimaIndex = animIndex;
+            nextAnimIndex = animIndex;
+            nextAnimStartTime = animStartTime;
         }
 
         public void Initialize(string configName, object controller)
@@ -157,9 +160,11 @@ namespace XMLib.AM
             globalFrameIndex = -1;
             stateBeginFrameIndex = -1;
             animIndex = 0;
+            animStartTime = 0;
             nextStateName = null;
             nextStatePriority = 0;
-            nextAnimaIndex = -1;
+            nextAnimIndex = -1;
+            nextAnimStartTime = 0f;
             eventTypes = ActionMachineEvent.None;
 
             isCacheSConfigDirty = true;
@@ -182,9 +187,8 @@ namespace XMLib.AM
             StateConfig sConfig = GetStateConfig();
             stateBeginFrameIndex = frameIndex + 1;
             animIndex = sConfig.dafualtAnimIndex;
-
-            //初始化新的动作
-            InitializeActions(actionNodes, sConfig.actions, 0);
+            animStartTime = 0f;
+            InitializeActions(actionNodes, sConfig.actions, 0); //初始化新的动作
         }
 
         public void Destroy()
@@ -291,10 +295,10 @@ namespace XMLib.AM
         {
             eventTypes = ActionMachineEvent.None;
 
-            if (globalFrameIndex < 0)
-            {//初始状态是改变
-                eventTypes |= (ActionMachineEvent.StateChanged | ActionMachineEvent.AnimChanged);
-            }
+            //if (globalFrameIndex < 0)
+            //{//初始状态是改变
+            //    eventTypes |= (ActionMachineEvent.StateChanged | ActionMachineEvent.AnimChanged);
+            //}
         }
 
         private void UpdateGlobalFrame(float deltaTime)
@@ -359,7 +363,8 @@ namespace XMLib.AM
 
             StateConfig sConfig = GetStateConfig();
 
-            animIndex = nextAnimaIndex < 0 ? sConfig.dafualtAnimIndex : nextAnimaIndex;
+            animIndex = nextAnimIndex < 0 ? sConfig.dafualtAnimIndex : nextAnimIndex;
+            animStartTime = nextAnimStartTime;
 
             //释放已有动作
             DisposeActions(actionNodes);
@@ -368,7 +373,8 @@ namespace XMLib.AM
 
             nextStateName = null;
             nextStatePriority = 0;
-            nextAnimaIndex = -1;
+            nextAnimIndex = -1;
+            nextAnimStartTime = 0f;
 
             //状态改变
             eventTypes |= (ActionMachineEvent.StateChanged | ActionMachineEvent.AnimChanged);

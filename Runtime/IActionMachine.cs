@@ -31,6 +31,7 @@ namespace XMLib.AM
         ActionMachineEvent eventTypes { get; }
 
         int animIndex { get; }
+        float animStartTime { get; set; }
 
         int frameIndex { get; }
         int stateBeginFrameIndex { get; }
@@ -59,7 +60,7 @@ namespace XMLib.AM
 
         void LogicUpdate(float delta);
 
-        void ChangeState(string stateName, int priority = 0, int animIndex = -1);
+        void ChangeState(string stateName, int priority = 0, int animIndex = -1, float animStartTime = 0f);
 
         void ChangeAnim(int animIndex, bool holdDuration = false);
 

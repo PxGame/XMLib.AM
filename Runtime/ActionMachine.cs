@@ -24,7 +24,7 @@ namespace XMLib.AM
         public int stateBeginFrameIndex { get; protected set; }
 
         public int animIndex { get; protected set; }
-        public float animStartTime { get; set; }
+        public float animStartTime { get; protected set; }
 
         public string configName { get; protected set; }
 

@@ -31,7 +31,7 @@ namespace XMLib.AM
         ActionMachineEvent eventTypes { get; }
 
         int animIndex { get; }
-        float animStartTime { get; set; }
+        float animStartTime { get; }
 
         int frameIndex { get; }
         int stateBeginFrameIndex { get; }

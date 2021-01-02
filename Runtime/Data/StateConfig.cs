@@ -26,7 +26,6 @@ namespace XMLib.AM
 
         public List<FrameConfig> frames = new List<FrameConfig>();
 
-        
         [SerializeReference]
         public List<object> actions = new List<object>();
 
@@ -37,6 +36,24 @@ namespace XMLib.AM
         public string GetAnimName(int index)
         {
             return animNames?.Count > index ? animNames[index] : string.Empty;
+        }
+
+        public List<RangeConfig> GetBodyRanges(int frameIndex)
+        {
+            frameIndex %= frames.Count;
+            FrameConfig config = frames[frameIndex];
+
+            while (config.stayBodyRange)
+            {
+                --frameIndex;
+                if (frameIndex < 0)
+                {
+                    return null;
+                }
+                config = frames[frameIndex];
+            }
+
+            return config.bodyRanges;
         }
     }
 }

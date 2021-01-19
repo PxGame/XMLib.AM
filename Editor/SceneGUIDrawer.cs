@@ -81,19 +81,19 @@ namespace XMLib.AM
             HandlesDrawer.H.fillColor = true;
             switch (config.value)
             {
-                case RangeConfig.RectItem v:
+                case Ranges.RectItem v:
                     HandlesDrawer.H.DrawRect(v.size, Matrix4x4.Translate(v.offset));
                     break;
 
-                case RangeConfig.CircleItem v:
+                case Ranges.CircleItem v:
                     HandlesDrawer.H.DrawCircle(v.radius, Matrix4x4.Translate(v.offset));
                     break;
 
-                case RangeConfig.BoxItem v:
+                case Ranges.BoxItem v:
                     HandlesDrawer.H.DrawBox(v.size, Matrix4x4.Translate(v.offset));
                     break;
 
-                case RangeConfig.SphereItem v:
+                case Ranges.SphereItem v:
                     HandlesDrawer.H.DrawSphere(v.radius, Matrix4x4.Translate(v.offset));
                     break;
             }
@@ -109,29 +109,29 @@ namespace XMLib.AM
         private BoxBoundsHandle boxHandle = new BoxBoundsHandle();
         private SphereBoundsHandle sphereHandle = new SphereBoundsHandle();
 
-        private void ControlRange(int index, RangeConfig.IItem config)
+        private void ControlRange(int index, Ranges.IItem config)
         {
             Vector3 offset = Vector3.zero;
             Vector3 size = Vector3.zero;
 
             switch (config)
             {
-                case RangeConfig.RectItem v:
+                case Ranges.RectItem v:
                     offset = v.offset;
                     size = v.size;
                     break;
 
-                case RangeConfig.CircleItem v:
+                case Ranges.CircleItem v:
                     offset = v.offset;
                     size = new Vector3(v.radius, 0f, 0f);
                     break;
 
-                case RangeConfig.BoxItem v:
+                case Ranges.BoxItem v:
                     offset = v.offset;
                     size = v.size;
                     break;
 
-                case RangeConfig.SphereItem v:
+                case Ranges.SphereItem v:
                     offset = v.offset;
                     size = new Vector2(v.radius, 0f);
                     break;
@@ -165,7 +165,7 @@ namespace XMLib.AM
 
                     switch (config)
                     {
-                        case RangeConfig.RectItem v:
+                        case Ranges.RectItem v:
                             {
                                 boxHandle.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y;
                                 boxHandle.center = offset;
@@ -176,7 +176,7 @@ namespace XMLib.AM
                                 break;
                             }
 
-                        case RangeConfig.CircleItem v:
+                        case Ranges.CircleItem v:
                             {
                                 sphereHandle.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y;
                                 sphereHandle.center = offset;
@@ -186,7 +186,7 @@ namespace XMLib.AM
                                 size.x = sphereHandle.radius;
                                 break;
                             }
-                        case RangeConfig.BoxItem v:
+                        case Ranges.BoxItem v:
                             {
                                 boxHandle.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y | PrimitiveBoundsHandle.Axes.Z;
                                 boxHandle.center = offset;
@@ -196,7 +196,7 @@ namespace XMLib.AM
                                 size = boxHandle.size;
                                 break;
                             }
-                        case RangeConfig.SphereItem v:
+                        case Ranges.SphereItem v:
                             {
                                 sphereHandle.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y | PrimitiveBoundsHandle.Axes.Z;
                                 sphereHandle.center = offset;
@@ -219,22 +219,22 @@ namespace XMLib.AM
 
             switch (config)
             {
-                case RangeConfig.RectItem v:
+                case Ranges.RectItem v:
                     v.offset = getOffset();
                     v.size = getSize();
                     break;
 
-                case RangeConfig.CircleItem v:
+                case Ranges.CircleItem v:
                     v.offset = getOffset();
                     v.radius = getRadius();
                     break;
 
-                case RangeConfig.BoxItem v:
+                case Ranges.BoxItem v:
                     v.offset = getOffset();
                     v.size = getSize();
                     break;
 
-                case RangeConfig.SphereItem v:
+                case Ranges.SphereItem v:
                     v.offset = getOffset();
                     v.radius = getRadius();
                     break;

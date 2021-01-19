@@ -16,6 +16,24 @@ namespace XMLib.AM
     [Serializable]
     public class RangeConfig
     {
+        [Ranges.RangeTypes]
+        [SerializeReference]
+        public Ranges.IItem value;
+
+        public Type GetValueType() => value?.GetType() ?? null;
+
+        public RangeConfig()
+        {
+        }
+
+        public RangeConfig(RangeConfig config)
+        {
+            this.value = config.value.Clone();
+        }
+    }
+
+    namespace Ranges
+    {
         #region data
 
         public interface IItem
@@ -87,22 +105,11 @@ namespace XMLib.AM
             }
         }
 
+        public class RangeTypesAttribute : ObjectTypesAttribute
+        {
+            public override Type baseType => typeof(IItem);
+        }
+
         #endregion data
-
-        [ObjectTypes(typeof(RectItem), typeof(CircleItem), typeof(BoxItem), typeof(SphereItem))]
-        
-        [SerializeReference]
-        public IItem value;
-
-        public Type GetValueType() => value?.GetType() ?? null;
-
-        public RangeConfig()
-        {
-        }
-
-        public RangeConfig(RangeConfig config)
-        {
-            this.value = config.value.Clone();
-        }
     }
 }

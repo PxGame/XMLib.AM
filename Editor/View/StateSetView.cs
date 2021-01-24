@@ -17,9 +17,9 @@ namespace XMLib.AM
     /// StateSetView
     /// </summary>
     [Serializable]
-    public class StateSetView : IDataView
+    public class StateSetView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow win { get; set; }
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
 
         public string title => "状态设置";
         public bool useAre => true;

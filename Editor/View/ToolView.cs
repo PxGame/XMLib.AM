@@ -17,7 +17,7 @@ namespace XMLib.AM
     /// ToolView
     /// </summary>
     [Serializable]
-    public class ToolView : IView
+    public class ToolView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
         [Serializable]
         public class Setting
@@ -29,7 +29,7 @@ namespace XMLib.AM
             public int toIndex;
         }
 
-        public ActionEditorWindow win { get; set; }
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
 
         public Setting setting => win.setting.toolView;
 

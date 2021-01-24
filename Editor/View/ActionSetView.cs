@@ -18,9 +18,9 @@ namespace XMLib.AM
     /// ActionSetView
     /// </summary>
     [Serializable]
-    public class ActionSetView : IView
+    public class ActionSetView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow win { get; set; }
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
 
         public string title => "动作设置";
 

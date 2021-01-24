@@ -17,9 +17,9 @@ namespace XMLib.AM
     /// MenuView
     /// </summary>
     [Serializable]
-    public class MenuView : IView
+    public class MenuView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow win { get; set; }
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
 
         public string title => string.Empty;
         public bool useAre => true;
@@ -97,7 +97,7 @@ namespace XMLib.AM
             win.setting.showView = EditorGUILayoutEx.DrawObject("显示", win.setting.showView);
             GUILayout.FlexibleSpace();
 
-            string[] configNames = ActionMachineHelper.loadedConfig.Keys.ToArray();
+            string[] configNames = ActionMachineHelper<ControllerType, FloatType>.loadedConfig.Keys.ToArray();
             if (configNames == null || configNames.Length == 0)
             {
                 selectConfigName = string.Empty;
@@ -129,7 +129,7 @@ namespace XMLib.AM
             {
                 selectConfigName = configNames[index];
 
-                MachineConfig config = ActionMachineHelper.loadedConfig[selectConfigName];
+                MachineConfig config = ActionMachineHelper<ControllerType, FloatType>.loadedConfig[selectConfigName];
                 win.config = config;
             }
 

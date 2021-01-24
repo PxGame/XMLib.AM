@@ -10,12 +10,12 @@ namespace XMLib.AM
     /// <summary>
     /// ActionNode
     /// </summary>
-    public class ActionNode
+    public class ActionNode<ControllerType, FloatType> where FloatType : struct
     {
-        public IActionMachine actionMachine;
+        public IActionMachine<ControllerType, FloatType> actionMachine;
         public int beginFrameIndex;
         public object config;
-        public IActionHandler handler;
+        public IActionHandler<ControllerType, FloatType> handler;
         public object data;
         public bool isUpdating { get; private set; } = false;
         public int updateCnt { get; private set; } = 0;
@@ -49,7 +49,7 @@ namespace XMLib.AM
             isUpdating = false;
         }
 
-        public void InvokeUpdate(float deltaTime)
+        public void InvokeUpdate(FloatType deltaTime)
         {
             if (!isUpdating)
             {

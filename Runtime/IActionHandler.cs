@@ -10,12 +10,12 @@ namespace XMLib.AM
     /// <summary>
     /// IActionHandler
     /// </summary>
-    public interface IActionHandler
+    public interface IActionHandler<ControllerType, FloatType> where FloatType : struct
     {
-        void Enter(ActionNode node);
+        void Enter(ActionNode<ControllerType, FloatType> node);
 
-        void Exit(ActionNode node);
+        void Exit(ActionNode<ControllerType, FloatType> node);
 
-        void Update(ActionNode node, float deltaTime);
+        void Update(ActionNode<ControllerType, FloatType> node, FloatType deltaTime);
     }
 }

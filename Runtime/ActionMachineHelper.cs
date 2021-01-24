@@ -14,7 +14,7 @@ namespace XMLib.AM
     /// <summary>
     /// ActionMachineHelper
     /// </summary>
-    public static class ActionMachineHelper
+    public class ActionMachineHelper<ControllerType, FloatType> where FloatType : struct
     {
         #region static
 
@@ -22,11 +22,11 @@ namespace XMLib.AM
 
         public static Dictionary<string, MachineConfig> loadedConfig => machineConfigDict;
 
-        private static Dictionary<Type, IActionHandler> actionHandlerDict = new Dictionary<Type, IActionHandler>();
+        private static Dictionary<Type, IActionHandler<ControllerType, FloatType>> actionHandlerDict = new Dictionary<Type, IActionHandler<ControllerType, FloatType>>();
         private static Dictionary<string, MachineConfig> machineConfigDict = new Dictionary<string, MachineConfig>();
         private static Dictionary<string, Dictionary<string, StateConfig>> stateConfigDict = new Dictionary<string, Dictionary<string, StateConfig>>();
 
-        private static Stack<ActionNode> actionNodePool = new Stack<ActionNode>();
+        private static Stack<ActionNode<ControllerType, FloatType>> actionNodePool = new Stack<ActionNode<ControllerType, FloatType>>();
 
         /// <summary>
         /// 初始化
@@ -34,7 +34,7 @@ namespace XMLib.AM
         /// <param name="loader"></param>
         public static void Init(Func<string, MachineConfig> loader)
         {
-            ActionMachineHelper.loader = loader;
+            ActionMachineHelper<ControllerType, FloatType>.loader = loader;
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace XMLib.AM
         /// </summary>
         /// <param name="type">配置文件类型</param>
         /// <returns>操作类</returns>
-        public static IActionHandler GetActionHandler(Type type)
+        public static IActionHandler<ControllerType, FloatType> GetActionHandler(Type type)
         {
-            IActionHandler handler = null;
+            IActionHandler<ControllerType, FloatType> handler = null;
 
             if (actionHandlerDict.TryGetValue(type, out handler))
             {
@@ -55,10 +55,10 @@ namespace XMLib.AM
 
             Type handlerType = config.handlerType;
 
-            handler = Activator.CreateInstance(handlerType) as IActionHandler;
+            handler = Activator.CreateInstance(handlerType) as IActionHandler<ControllerType, FloatType>;
             if (handler == null)
             {
-                throw new RuntimeException($"{handlerType} 类型未继承 {nameof(IActionHandler)} 接口");
+                throw new RuntimeException($"{handlerType} 类型未继承 {nameof(IActionHandler<ControllerType, FloatType>)} 接口");
             }
 
             actionHandlerDict.Add(type, handler);
@@ -121,14 +121,14 @@ namespace XMLib.AM
         /// 创建动作节点
         /// </summary>
         /// <returns>节点</returns>
-        public static ActionNode CreateActionNode()
+        public static ActionNode<ControllerType, FloatType> CreateActionNode()
         {
             if (actionNodePool.Count > 0)
             {
                 return actionNodePool.Pop();
             }
 
-            ActionNode node = new ActionNode();
+            ActionNode<ControllerType, FloatType> node = new ActionNode<ControllerType, FloatType>();
             return node;
         }
 
@@ -136,7 +136,7 @@ namespace XMLib.AM
         /// 回收动作节点
         /// </summary>
         /// <param name="node">节点</param>
-        public static void RecycleActionNode(ActionNode node)
+        public static void RecycleActionNode(ActionNode<ControllerType, FloatType> node)
         {
             node.Reset();
             actionNodePool.Push(node);

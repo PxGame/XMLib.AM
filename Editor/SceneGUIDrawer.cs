@@ -17,9 +17,9 @@ namespace XMLib.AM
     /// <summary>
     /// SceneGUIDrawer
     /// </summary>
-    public class SceneGUIDrawer
+    public class SceneGUIDrawer<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow win { get; set; }
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
 
         public void OnSceneGUI(SceneView sceneView)
         {

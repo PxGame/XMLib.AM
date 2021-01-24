@@ -14,10 +14,9 @@ namespace XMLib.AM
     /// <summary>
     /// IView
     /// </summary>
-    public interface IView
+    public interface IView<ControllerType, FloatType> where FloatType : struct
     {
-        ActionEditorWindow win { get; set; }
-
+        ActionEditorWindow<ControllerType, FloatType> win { get; set; }
         string title { get; }
         bool useAre { get; }
 

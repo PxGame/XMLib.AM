@@ -17,9 +17,9 @@ namespace XMLib.AM
     /// GlobalActionListView
     /// </summary>
     [Serializable]
-    public class GlobalActionListView : IView
+    public class GlobalActionListView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow win { get; set; }
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
 
         public string title => "全局动作列表";
         public bool useAre => true;

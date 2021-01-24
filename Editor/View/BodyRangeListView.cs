@@ -17,9 +17,9 @@ namespace XMLib.AM
     /// BodyRangeListView
     /// </summary>
     [Serializable]
-    public class BodyRangeListView : IDataView
+    public class BodyRangeListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType:struct
     {
-        public ActionEditorWindow win { get; set; }
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
 
         public string title => "身体范围";
 

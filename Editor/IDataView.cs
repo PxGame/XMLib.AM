@@ -14,7 +14,7 @@ namespace XMLib.AM
     /// <summary>
     /// IDataView
     /// </summary>
-    public interface IDataView : IView
+    public interface IDataView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
         object CopyData();
 

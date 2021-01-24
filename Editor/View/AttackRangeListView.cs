@@ -17,9 +17,9 @@ namespace XMLib.AM
     /// AttackRangeListView
     /// </summary>
     [Serializable]
-    public class AttackRangeListView : IDataView
+    public class AttackRangeListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow win { get; set; }
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
 
         public string title => "攻击范围";
 

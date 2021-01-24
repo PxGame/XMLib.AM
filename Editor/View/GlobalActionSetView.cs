@@ -18,9 +18,9 @@ namespace XMLib.AM
     /// GlobalActionSetView
     /// </summary>
     [Serializable]
-    public class GlobalActionSetView : IView
+    public class GlobalActionSetView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow win { get; set; }
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
 
         public string title => "全局动作设置";
         public bool useAre => true;

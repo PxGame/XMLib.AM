@@ -16,9 +16,9 @@ namespace XMLib.AM
     /// <summary>
     /// QuickButtonHandler
     /// </summary>
-    public class QuickButtonHandler
+    public class QuickButtonHandler<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow win { get; set; }
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
 
         public Rect winRect = new Rect(0, 100, 150, 300);
 

@@ -22,16 +22,24 @@ namespace XMLib.AM
     }
 
     /// <summary>
-    /// IActionMachine
+    /// IActionMachine<IActionController, Single>
     /// </summary>
+    public interface IActionMachine<ControllerType, FloatType> : IActionMachine where FloatType : struct
+    {
+        ControllerType controller { get; }
+        FloatType animStartTime { get; }
+
+        void Initialize(string config, ControllerType controller);
+        void LogicUpdate(FloatType delta);
+        void ChangeState(string stateName, int priority = 0, int animIndex = -1, FloatType animStartTime = default);
+    }
+
     public interface IActionMachine
     {
-        object controller { get; }
 
         ActionMachineEvent eventTypes { get; }
 
         int animIndex { get; }
-        float animStartTime { get; }
 
         int frameIndex { get; }
         int stateBeginFrameIndex { get; }
@@ -54,13 +62,8 @@ namespace XMLib.AM
 
         int GetStateLoopCnt();
 
-        void Initialize(string config, object controller);
 
         void Destroy();
-
-        void LogicUpdate(float delta);
-
-        void ChangeState(string stateName, int priority = 0, int animIndex = -1, float animStartTime = 0f);
 
         void ChangeAnim(int animIndex, bool holdDuration = false);
 

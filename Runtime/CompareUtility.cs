@@ -38,7 +38,7 @@ namespace XMLib.AM
             return CheckResult(result, compare);
         }
 
-        private static bool CheckResult(int result, CompareType compare)
+        public static bool CheckResult(int result, CompareType compare)
         {
             switch (compare)
             {

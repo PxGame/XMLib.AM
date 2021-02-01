@@ -5,23 +5,69 @@
  * 创建时间: 2019/10/28 16:28:13
  */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace XMLib.AM
 {
+    public abstract class IView
+    {
+        public abstract string title { get; }
+        public abstract bool useAre { get; }
+        public abstract void OnGUI(Rect rect);
+        public abstract void OnUpdate();
+
+        public EditorWindow popWindow { get; protected set; }
+
+        public bool isPop => popWindow != null;
+
+        public void ShowPopWindow()
+        {
+            popWindow = ViewWindow.Show(this);
+        }
+
+        public void HidePopWindow()
+        {
+            if (popWindow == null)
+            {
+                return;
+            }
+
+            popWindow.Close();
+            popWindow = null;
+        }
+
+        public virtual void OnEnable()
+        {
+        }
+
+        public virtual void OnDisable()
+        {
+            HidePopWindow();
+        }
+
+        public virtual void OnRepaint()
+        {
+            if (popWindow != null)
+            {
+                popWindow.Repaint();
+            }
+        }
+
+        public void OnPopDestroy()
+        {
+            popWindow = null;
+        }
+    }
+
     /// <summary>
     /// IView
     /// </summary>
-    public interface IView<ControllerType, FloatType> where FloatType : struct
+    public abstract class IView<ControllerType, FloatType> : IView where FloatType : struct
     {
-        ActionEditorWindow<ControllerType, FloatType> win { get; set; }
-        string title { get; }
-        bool useAre { get; }
-
-        void OnGUI(Rect rect);
-
-        void OnUpdate();
+        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
     }
 }

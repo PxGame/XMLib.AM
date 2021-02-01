@@ -19,14 +19,12 @@ namespace XMLib.AM
     [Serializable]
     public class BodyRangeListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType:struct
     {
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
+        public override string title => "身体范围";
 
-        public string title => "身体范围";
-
-        public bool useAre => true;
+        public override bool useAre => true;
         private Vector2 scrollPos;
 
-        public void OnGUI(Rect rect)
+        public override void OnGUI(Rect rect)
         {
             FrameConfig configs = win.currentFrame;
             if (null == configs)
@@ -64,12 +62,12 @@ namespace XMLib.AM
             adder(new RangeConfig());
         }
 
-        public object CopyData()
+        public override object CopyData()
         {
             return win.currentBodyRanges;
         }
 
-        public void PasteData(object data)
+        public override void PasteData(object data)
         {
             if (win.currentBodyRanges != null && data is List<RangeConfig> ranges)
             {
@@ -78,7 +76,7 @@ namespace XMLib.AM
             }
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
         }
     }

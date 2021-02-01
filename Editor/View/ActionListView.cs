@@ -19,15 +19,13 @@ namespace XMLib.AM
     [Serializable]
     public class ActionListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
+        public override string title => "动作列表";
 
-        public string title => "动作列表";
-
-        public bool useAre => true;
+        public override bool useAre => true;
 
         private Vector2 scrollPos;
 
-        public void OnGUI(Rect rect)
+        public override void OnGUI(Rect rect)
         {
             List<object> configs = win.currentActions;
             if (null == configs)
@@ -53,16 +51,16 @@ namespace XMLib.AM
             });
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
         }
 
-        public object CopyData()
+        public override object CopyData()
         {
             return win.currentAction;
         }
 
-        public void PasteData(object data)
+        public override void PasteData(object data)
         {
             if (data.GetType().IsDefined(typeof(ActionConfigAttribute), true))
             {

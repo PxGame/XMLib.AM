@@ -21,10 +21,8 @@ namespace XMLib.AM
     [Serializable]
     public class FrameListView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
-
-        public string title => $"帧序列({win.setting.frameRate}s)";
-        public bool useAre => false;
+        public override string title => $"帧序列({win.setting.frameRate}s)";
+        public override bool useAre => false;
 
         private Vector2 actionViewScroll = Vector2.zero;
 
@@ -35,7 +33,7 @@ namespace XMLib.AM
 
         private float toolHeight = 22f;
 
-        public void OnGUI(Rect rect)
+        public override void OnGUI(Rect rect)
         {
             List<FrameConfig> frames = win.currentFrames;
             List<object> actions = win.currentActions;
@@ -280,7 +278,7 @@ namespace XMLib.AM
             GUILayout.EndArea();
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
             if (!playFrame)
             {

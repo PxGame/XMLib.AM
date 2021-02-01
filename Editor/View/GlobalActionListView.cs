@@ -19,14 +19,12 @@ namespace XMLib.AM
     [Serializable]
     public class GlobalActionListView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
-
-        public string title => "全局动作列表";
-        public bool useAre => true;
+        public override string title => "全局动作列表";
+        public override bool useAre => true;
 
         private Vector2 scrollPos;
 
-        public void OnGUI(Rect rect)
+        public override void OnGUI(Rect rect)
         {
             List<object> configs = win.currentGlobalActions;
             if (null == configs)
@@ -52,7 +50,7 @@ namespace XMLib.AM
             });
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
         }
     }

@@ -14,10 +14,10 @@ namespace XMLib.AM
     /// <summary>
     /// IDataView
     /// </summary>
-    public interface IDataView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
+    public abstract class IDataView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-        object CopyData();
+        public abstract object CopyData();
 
-        void PasteData(object data);
+        public abstract void PasteData(object data);
     }
 }

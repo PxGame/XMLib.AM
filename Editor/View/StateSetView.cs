@@ -19,14 +19,12 @@ namespace XMLib.AM
     [Serializable]
     public class StateSetView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
-
-        public string title => "状态设置";
-        public bool useAre => true;
+        public override string title => "状态设置";
+        public override bool useAre => true;
 
         private Vector2 scrollView = Vector2.zero;
 
-        public void OnGUI(Rect rect)
+        public override void OnGUI(Rect rect)
         {
             StateConfig config = win.currentState;
             if (null == config)
@@ -58,16 +56,16 @@ namespace XMLib.AM
             EditorGUILayout.EndScrollView();
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
         }
 
-        public object CopyData()
+        public override object CopyData()
         {
             return win.currentState;
         }
 
-        public void PasteData(object data)
+        public override void PasteData(object data)
         {
             if (win.currentState != null && data is StateConfig state)
             {

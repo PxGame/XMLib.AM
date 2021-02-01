@@ -30,6 +30,7 @@ namespace XMLib.AM
             Action = 0b0000_1000,
             Tool = 0b0001_0000,
             Other = 0b0010_0000,
+            Frame = 0b0100_0000,
         }
 
         /// <summary>
@@ -345,10 +346,21 @@ namespace XMLib.AM
 
             SceneView.duringSceneGui += OnSceneGUI;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+
+
+            foreach (var view in views)
+            {
+                view.OnEnable();
+            }
         }
 
         private void OnDisable()
         {
+            foreach (var view in views)
+            {
+                view.OnDisable();
+            }
+
             SceneView.duringSceneGui -= OnSceneGUI;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
 
@@ -381,6 +393,11 @@ namespace XMLib.AM
             UpdateActionMachine();
 
             EventProcess();
+
+            foreach (var view in views)
+            {
+                view.OnRepaint();
+            }
 
             quickButtonHandler.OnGUI();
         }
@@ -540,6 +557,11 @@ namespace XMLib.AM
 
         private void DrawView(IView<ControllerType, FloatType> view, Rect rect, bool checkConfig = true)
         {
+            if (view.isPop)
+            {
+                return;
+            }
+
             Rect contentRect = rect;
 
             if (!string.IsNullOrEmpty(view.title))
@@ -578,6 +600,12 @@ namespace XMLib.AM
                             }
                         }
                     }
+                }
+
+                if (GUILayout.Button("S", AEStyles.view_head, GUILayout.Width(20)))
+                {
+                    GUI.FocusControl(null);
+                    ViewWindow.Show(view);
                 }
 
                 GUILayout.EndHorizontal();
@@ -636,24 +664,30 @@ namespace XMLib.AM
 
             if ((setting.showView & ViewType.GlobalAction) != 0)
             {
-                globalActionListViewRect = new Rect(
-                   startPosX + space,
-                   startPosY + space,
-                   globalActionListViewRectWidth - space,
-                   height - space * 2);
-                startPosX += globalActionListViewRectWidth;
-                width -= globalActionListViewRectWidth;
+                if (!globalActionListView.isPop)
+                {
+                    globalActionListViewRect = new Rect(
+                       startPosX + space,
+                       startPosY + space,
+                       globalActionListViewRectWidth - space,
+                       height - space * 2);
+                    startPosX += globalActionListViewRectWidth;
+                    width -= globalActionListViewRectWidth;
+                }
 
-                globalActionSetViewRect = new Rect(
-                   startPosX + space,
-                   startPosY + space,
-                   globalActionSetViewRectWidth - space,
-                   height - space * 2);
-                startPosX += globalActionSetViewRectWidth;
-                width -= globalActionSetViewRectWidth;
+                if (!globalActionSetView.isPop)
+                {
+                    globalActionSetViewRect = new Rect(
+                       startPosX + space,
+                       startPosY + space,
+                       globalActionSetViewRectWidth - space,
+                       height - space * 2);
+                    startPosX += globalActionSetViewRectWidth;
+                    width -= globalActionSetViewRectWidth;
+                }
             }
 
-            if ((setting.showView & ViewType.State) != 0)
+            if ((setting.showView & ViewType.State) != 0 && !stateListView.isPop)
             {
                 stateListViewRect = new Rect(
                startPosX + space,
@@ -664,19 +698,22 @@ namespace XMLib.AM
                 width -= stateListViewRectWidth;
             }
 
-            frameListViewRect = new Rect(
-               startPosX + space,
-               startPosY + space,
-               width - space,
-                frameListViewRectHeight - space);
-            startPosY += frameListViewRectHeight;
-            height -= frameListViewRectHeight;
+            if ((setting.showView & ViewType.Frame) != 0 && !frameListView.isPop)
+            {
+                frameListViewRect = new Rect(
+                   startPosX + space,
+                   startPosY + space,
+                   width - space,
+                    frameListViewRectHeight - space);
+                startPosY += frameListViewRectHeight;
+                height -= frameListViewRectHeight;
+            }
 
             float itemHeight = height - scrollHeight;
             float nextPosX = startPosX;
             float nextPosY = startPosY;
 
-            if ((setting.showView & ViewType.Tool) != 0)
+            if ((setting.showView & ViewType.Tool) != 0 && !toolView.isPop)
             {
                 toolViewRect = new Rect(
                     nextPosX + space,
@@ -686,7 +723,7 @@ namespace XMLib.AM
                 nextPosX += toolViewRectWidth;
             }
 
-            if ((setting.showView & ViewType.StateSet) != 0)
+            if ((setting.showView & ViewType.StateSet) != 0 && !stateSetView.isPop)
             {
                 stateSetViewRect = new Rect(
                     nextPosX + space,
@@ -698,36 +735,48 @@ namespace XMLib.AM
 
             if ((setting.showView & ViewType.Action) != 0)
             {
-                actionListViewRect = new Rect(
-                    nextPosX + space,
-                    nextPosY + space,
-                    actionListViewRectWidth - space,
-                    itemHeight - space * 2);
-                nextPosX += actionListViewRectWidth;
+                if (!actionListView.isPop)
+                {
+                    actionListViewRect = new Rect(
+                        nextPosX + space,
+                        nextPosY + space,
+                        actionListViewRectWidth - space,
+                        itemHeight - space * 2);
+                    nextPosX += actionListViewRectWidth;
+                }
 
-                actionSetViewRect = new Rect(
-                    nextPosX + space,
-                    nextPosY + space,
-                    actionSetViewRectWidth - space,
-                    itemHeight - space * 2);
-                nextPosX += actionSetViewRectWidth;
+                if (!actionSetView.isPop)
+                {
+                    actionSetViewRect = new Rect(
+                        nextPosX + space,
+                        nextPosY + space,
+                        actionSetViewRectWidth - space,
+                        itemHeight - space * 2);
+                    nextPosX += actionSetViewRectWidth;
+                }
             }
 
             if ((setting.showView & ViewType.Other) != 0)
             {
-                attackRangeListViewRect = new Rect(
-                    nextPosX + space,
-                    nextPosY + space,
-                    attackRangeListViewRectWidth - space,
-                    itemHeight - space * 2);
-                nextPosX += attackRangeListViewRectWidth;
+                if (!attackRangeListView.isPop)
+                {
+                    attackRangeListViewRect = new Rect(
+                        nextPosX + space,
+                        nextPosY + space,
+                        attackRangeListViewRectWidth - space,
+                        itemHeight - space * 2);
+                    nextPosX += attackRangeListViewRectWidth;
+                }
 
-                bodyRangeListViewRect = new Rect(
-                    nextPosX + space,
-                    nextPosY + space,
-                    bodyRangeListViewRectWidth - space,
-                    itemHeight - space * 2);
-                nextPosX += bodyRangeListViewRectWidth;
+                if (!bodyRangeListView.isPop)
+                {
+                    bodyRangeListViewRect = new Rect(
+                        nextPosX + space,
+                        nextPosY + space,
+                        bodyRangeListViewRectWidth - space,
+                        itemHeight - space * 2);
+                    nextPosX += bodyRangeListViewRectWidth;
+                }
             }
 
             #endregion calc size
@@ -735,7 +784,11 @@ namespace XMLib.AM
             #region draw
 
             DrawView(menuView, menuViewRect, false);
-            DrawView(frameListView, frameListViewRect);
+
+            if ((setting.showView & ViewType.Frame) != 0)
+            {
+                DrawView(frameListView, frameListViewRect);
+            }
 
             if ((setting.showView & ViewType.State) != 0)
             {
@@ -779,5 +832,57 @@ namespace XMLib.AM
         }
 
         #endregion Draw view
+    }
+
+    public class ViewWindow : EditorWindow
+    {
+        IView view;
+        public static ViewWindow Show(IView view)
+        {
+            var win = EditorWindow.CreateWindow<ViewWindow>(view.title);
+            win.Init(view);
+            win.Show();
+            return win;
+        }
+
+        private void Init(IView view)
+        {
+            this.view = view;
+        }
+
+        private void OnEnable()
+        {
+            autoRepaintOnSceneChange = true;
+        }
+
+        private void OnDisable()
+        {
+        }
+
+        private void OnDestroy()
+        {
+            view.OnPopDestroy();
+        }
+
+        private void OnGUI()
+        {
+            if (view == null)
+            {
+                Close();
+                return;
+            }
+
+            Rect contentRect = new Rect(Vector2.zero, this.position.size);
+            if (view.useAre)
+            {
+                GUILayout.BeginArea(contentRect);
+                view.OnGUI(contentRect);
+                GUILayout.EndArea();
+            }
+            else
+            {
+                view.OnGUI(contentRect);
+            }
+        }
     }
 }

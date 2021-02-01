@@ -19,13 +19,12 @@ namespace XMLib.AM
     [Serializable]
     public class MenuView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
-
-        public string title => string.Empty;
-        public bool useAre => true;
+     
+        public override string title => string.Empty;
+        public override bool useAre => true;
         private string selectConfigName;
 
-        public void OnGUI(Rect rect)
+        public override void OnGUI(Rect rect)
         {
             GUILayout.BeginHorizontal();
 
@@ -219,7 +218,7 @@ namespace XMLib.AM
             Debug.Log($"配置已拷贝到 : {filePath}");
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
         }
     }

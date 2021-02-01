@@ -20,14 +20,12 @@ namespace XMLib.AM
     [Serializable]
     public class GlobalActionSetView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
-
-        public string title => "全局动作设置";
-        public bool useAre => true;
+        public override string title => "全局动作设置";
+        public override bool useAre => true;
 
         private Vector2 scrollView = Vector2.zero;
 
-        public void OnGUI(Rect rect)
+        public override void OnGUI(Rect rect)
         {
             object obj = win.currentGlobalAction;
             if (null == obj)
@@ -40,7 +38,7 @@ namespace XMLib.AM
             EditorGUILayout.EndScrollView();
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
         }
     }

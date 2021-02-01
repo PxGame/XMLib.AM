@@ -18,14 +18,12 @@ namespace XMLib.AM
     [Serializable]
     public class StateListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
-
-        public string title => "状态列表";
-        public bool useAre => true;
+        public override string title => "状态列表";
+        public override bool useAre => true;
 
         private Vector2 scrollPos;
 
-        public void OnGUI(Rect rect)
+        public override void OnGUI(Rect rect)
         {
             GUILayout.BeginVertical(AEStyles.box);
             win.config.firstStateName = EditorGUILayoutEx.DrawObject("起始状态名", win.config.firstStateName);
@@ -39,12 +37,12 @@ namespace XMLib.AM
             adder(new StateConfig());
         }
 
-        public object CopyData()
+        public override object CopyData()
         {
             return win.currentState;
         }
 
-        public void PasteData(object data)
+        public override void PasteData(object data)
         {
             if (win.currentStates != null && data is StateConfig configs)
             {
@@ -52,7 +50,7 @@ namespace XMLib.AM
             }
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
         }
     }

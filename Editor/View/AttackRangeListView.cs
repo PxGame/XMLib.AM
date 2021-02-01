@@ -19,14 +19,12 @@ namespace XMLib.AM
     [Serializable]
     public class AttackRangeListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
     {
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
+        public override string title => "攻击范围";
 
-        public string title => "攻击范围";
-
-        public bool useAre => true;
+        public override bool useAre => true;
         private Vector2 scrollPos;
 
-        public void OnGUI(Rect rect)
+        public override void OnGUI(Rect rect)
         {
             List<RangeConfig> configs = win.currentAttackRanges;
             if (null == configs)
@@ -47,12 +45,12 @@ namespace XMLib.AM
             adder(new RangeConfig());
         }
 
-        public object CopyData()
+        public override object CopyData()
         {
             return win.currentAttackRanges;
         }
 
-        public void PasteData(object data)
+        public override void PasteData(object data)
         {
             if (win.currentAttackRanges != null && data is List<RangeConfig> ranges)
             {
@@ -61,7 +59,7 @@ namespace XMLib.AM
             }
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
         }
     }

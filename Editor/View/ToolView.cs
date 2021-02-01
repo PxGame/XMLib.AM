@@ -29,17 +29,15 @@ namespace XMLib.AM
             public int toIndex;
         }
 
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
-
         public Setting setting => win.setting.toolView;
 
-        public string title => "工具";
+        public override string title => "工具";
 
-        public bool useAre => true;
+        public override bool useAre => true;
 
         private Vector2 scrollView = Vector2.zero;
 
-        public void OnGUI(Rect rect)
+        public override void OnGUI(Rect rect)
         {
             StateConfig config = win.currentState;
             if (null == config)
@@ -69,7 +67,7 @@ namespace XMLib.AM
             EditorGUILayout.EndScrollView();
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
         }
 

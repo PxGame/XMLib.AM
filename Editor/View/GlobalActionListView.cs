@@ -16,7 +16,7 @@ namespace XMLib.AM
     /// GlobalActionListView
     /// </summary>
     [Serializable]
-    public class GlobalActionListView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
+    public class GlobalActionListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
     {
         public override string title => "全局动作列表";
         public override bool useAre => true;
@@ -51,6 +51,20 @@ namespace XMLib.AM
 
         public override void OnUpdate()
         {
+        }
+
+        public override object CopyData()
+        {
+            return win.currentGlobalAction;
+        }
+
+        public override void PasteData(object data)
+        {
+            if (data.GetType().IsDefined(typeof(ActionConfigAttribute), true))
+            {
+                win.currentGlobalActions.Add(data);
+                win.globalActionSelectIndex = win.currentGlobalActions.Count - 1;
+            }
         }
     }
 }

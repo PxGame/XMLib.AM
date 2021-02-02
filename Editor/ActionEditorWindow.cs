@@ -386,7 +386,7 @@ namespace XMLib.AM
         protected virtual void OnGUI()
         {
             Check();
-            Undo.RecordObject(this, "ActionEditorWindow");
+            //Undo.RecordObject(this, "ActionEditorWindow");
             AEStyles.Begin();
             Draw();
             AEStyles.End();
@@ -425,7 +425,7 @@ namespace XMLib.AM
             }
 
             //更新标题
-            this.titleContent = new GUIContent(configAsset != null ? $"编辑 {configAsset.name} ({typeof(FloatType)})" : $"动作编辑器({typeof(FloatType)})");
+            this.titleContent = new GUIContent(configAsset != null ? $"编辑 {configAsset.name} ({typeof(FloatType).Name})" : $"动作编辑器({typeof(FloatType).Name})");
         }
 
         public void UpdateTarget(GameObject target)
@@ -654,6 +654,7 @@ namespace XMLib.AM
             float itemHeight = height - scrollHeight;
             float nextPosX = startPosX;
             float nextPosY = startPosY;
+            bool hasNextView = false;
 
             if ((setting.showView & ViewType.Tool) != 0 && !toolView.isPop)
             {
@@ -663,6 +664,7 @@ namespace XMLib.AM
                     toolViewRectWidth - space,
                     itemHeight - space * 2);
                 nextPosX += toolViewRectWidth;
+                hasNextView = true;
             }
 
             if ((setting.showView & ViewType.StateSet) != 0 && !stateSetView.isPop)
@@ -673,6 +675,7 @@ namespace XMLib.AM
                     stateSetViewRectWidth - space,
                     itemHeight - space * 2);
                 nextPosX += stateSetViewRectWidth;
+                hasNextView = true;
             }
 
             if ((setting.showView & ViewType.Action) != 0)
@@ -685,6 +688,7 @@ namespace XMLib.AM
                         actionListViewRectWidth - space,
                         itemHeight - space * 2);
                     nextPosX += actionListViewRectWidth;
+                    hasNextView = true;
                 }
 
                 if (!actionSetView.isPop)
@@ -695,6 +699,7 @@ namespace XMLib.AM
                         actionSetViewRectWidth - space,
                         itemHeight - space * 2);
                     nextPosX += actionSetViewRectWidth;
+                    hasNextView = true;
                 }
             }
 
@@ -708,6 +713,7 @@ namespace XMLib.AM
                         attackRangeListViewRectWidth - space,
                         itemHeight - space * 2);
                     nextPosX += attackRangeListViewRectWidth;
+                    hasNextView = true;
                 }
 
                 if (!bodyRangeListView.isPop)
@@ -718,6 +724,7 @@ namespace XMLib.AM
                         bodyRangeListViewRectWidth - space,
                         itemHeight - space * 2);
                     nextPosX += bodyRangeListViewRectWidth;
+                    hasNextView = true;
                 }
             }
 
@@ -729,6 +736,7 @@ namespace XMLib.AM
 
             if ((setting.showView & ViewType.Frame) != 0 && !frameListView.isPop)
             {
+                frameListViewRect.height += hasNextView ? 0 : (height - space);
                 frameListView.Draw(frameListViewRect);
             }
 
@@ -749,44 +757,47 @@ namespace XMLib.AM
                 }
             }
 
-            Rect position = new Rect(startPosX + space, startPosY, width - space, height);
-            Rect view = new Rect(startPosX + space, startPosY, nextPosX - startPosX - space, itemHeight);
-            setting.otherViewScrollPos = GUI.BeginScrollView(position, setting.otherViewScrollPos, view, true, false);
-
-            if ((setting.showView & ViewType.StateSet) != 0 && !stateSetView.isPop)
+            if (hasNextView)
             {
-                stateSetView.Draw(stateSetViewRect);
-            }
+                Rect position = new Rect(startPosX + space, startPosY, width - space, height);
+                Rect view = new Rect(startPosX + space, startPosY, nextPosX - startPosX - space, itemHeight);
+                setting.otherViewScrollPos = GUI.BeginScrollView(position, setting.otherViewScrollPos, view, true, false);
 
-            if ((setting.showView & ViewType.Tool) != 0 && !toolView.isPop)
-            {
-                toolView.Draw(toolViewRect);
-            }
+                if ((setting.showView & ViewType.StateSet) != 0 && !stateSetView.isPop)
+                {
+                    stateSetView.Draw(stateSetViewRect);
+                }
 
-            if ((setting.showView & ViewType.Action) != 0)
-            {
-                if (!actionListView.isPop)
+                if ((setting.showView & ViewType.Tool) != 0 && !toolView.isPop)
                 {
-                    actionListView.Draw(actionListViewRect);
+                    toolView.Draw(toolViewRect);
                 }
-                if (!actionSetView.isPop)
-                {
-                    actionSetView.Draw(actionSetViewRect);
-                }
-            }
 
-            if ((setting.showView & ViewType.Other) != 0)
-            {
-                if (!attackRangeListView.isPop)
+                if ((setting.showView & ViewType.Action) != 0)
                 {
-                    attackRangeListView.Draw(attackRangeListViewRect);
+                    if (!actionListView.isPop)
+                    {
+                        actionListView.Draw(actionListViewRect);
+                    }
+                    if (!actionSetView.isPop)
+                    {
+                        actionSetView.Draw(actionSetViewRect);
+                    }
                 }
-                if (!bodyRangeListView.isPop)
+
+                if ((setting.showView & ViewType.Other) != 0)
                 {
-                    bodyRangeListView.Draw(bodyRangeListViewRect);
+                    if (!attackRangeListView.isPop)
+                    {
+                        attackRangeListView.Draw(attackRangeListViewRect);
+                    }
+                    if (!bodyRangeListView.isPop)
+                    {
+                        bodyRangeListView.Draw(bodyRangeListViewRect);
+                    }
                 }
+                GUI.EndScrollView();
             }
-            GUI.EndScrollView();
 
             #endregion draw
         }

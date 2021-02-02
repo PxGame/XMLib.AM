@@ -81,7 +81,7 @@ namespace XMLib.AM
 
             if (!string.IsNullOrEmpty(title))
             {
-                float titleHeight = 18f;
+                float titleHeight = 16f;
                 Rect titleRect = new Rect(rect.x, rect.y, rect.width, titleHeight);
                 contentRect = new Rect(rect.x, rect.y + titleHeight, rect.width, rect.height - titleHeight);
 

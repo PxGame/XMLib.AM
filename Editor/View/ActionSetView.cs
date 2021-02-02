@@ -6,9 +6,6 @@
  */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,14 +17,13 @@ namespace XMLib.AM
     [Serializable]
     public class ActionSetView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-
         public override string title => "动作设置";
 
         public override bool useAre => true;
 
         private Vector2 scrollView = Vector2.zero;
 
-        public override void OnGUI(Rect rect)
+        protected override void OnGUI(Rect rect)
         {
             object obj = win.currentAction;
             if (null == obj)

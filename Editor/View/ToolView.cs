@@ -5,14 +5,17 @@
  * 创建时间: 2020/1/10 11:02:09
  */
 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
 using System;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 
 namespace XMLib.AM
 {
+    public partial class Setting
+    {
+    }
+
     /// <summary>
     /// ToolView
     /// </summary>
@@ -37,7 +40,7 @@ namespace XMLib.AM
 
         private Vector2 scrollView = Vector2.zero;
 
-        public override void OnGUI(Rect rect)
+        protected override void OnGUI(Rect rect)
         {
             StateConfig config = win.currentState;
             if (null == config)

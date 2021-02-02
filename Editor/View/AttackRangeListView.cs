@@ -6,7 +6,6 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -24,7 +23,7 @@ namespace XMLib.AM
         public override bool useAre => true;
         private Vector2 scrollPos;
 
-        public override void OnGUI(Rect rect)
+        protected override void OnGUI(Rect rect)
         {
             List<RangeConfig> configs = win.currentAttackRanges;
             if (null == configs)

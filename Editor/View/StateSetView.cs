@@ -6,8 +6,6 @@
  */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,7 +22,7 @@ namespace XMLib.AM
 
         private Vector2 scrollView = Vector2.zero;
 
-        public override void OnGUI(Rect rect)
+        protected override void OnGUI(Rect rect)
         {
             StateConfig config = win.currentState;
             if (null == config)

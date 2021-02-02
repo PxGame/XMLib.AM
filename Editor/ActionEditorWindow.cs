@@ -6,33 +6,37 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using System.Linq;
 
 namespace XMLib.AM
 {
+    [Flags]
+    public enum ViewType
+    {
+        None = 0b0000_0000,
+
+        GlobalAction = 0b0000_0001,
+        State = 0b0000_0010,
+        StateSet = 0b0000_0100,
+        Action = 0b0000_1000,
+        Tool = 0b0001_0000,
+        Other = 0b0010_0000,
+        Frame = 0b0100_0000,
+    }
+
+    public interface IActionEditorWindow
+    {
+        List<IView> views { get; }
+        Rect position { get; set; }
+    }
+
     /// <summary>
     /// ActionEditorWindow
     /// </summary>
-    public class ActionEditorWindow<ControllerType, FloatType> : EditorWindow where FloatType : struct
+    public class ActionEditorWindow<ControllerType, FloatType> : EditorWindow, IActionEditorWindow where FloatType : struct
     {
-        [Flags]
-        public enum ViewType
-        {
-            None = 0b0000_0000,
-
-            GlobalAction = 0b0000_0001,
-            State = 0b0000_0010,
-            StateSet = 0b0000_0100,
-            Action = 0b0000_1000,
-            Tool = 0b0001_0000,
-            Other = 0b0010_0000,
-            Frame = 0b0100_0000,
-        }
-
         /// <summary>
         /// 编辑器配置
         /// </summary>
@@ -73,7 +77,7 @@ namespace XMLib.AM
         [NonSerialized] public readonly ToolView<ControllerType, FloatType> toolView;
 
         //[SerializeReference]
-        private List<IView<ControllerType, FloatType>> views = new List<IView<ControllerType, FloatType>>();
+        public List<IView> views { get; private set; }
 
         private readonly SceneGUIDrawer<ControllerType, FloatType> guiDrawer;
         private readonly QuickButtonHandler<ControllerType, FloatType> quickButtonHandler;
@@ -112,7 +116,8 @@ namespace XMLib.AM
         public GameObject actionMachineObj = null;
         public ActionMachineTest actionMachine = null;
         public TextAsset configAsset = null;
-        public MachineConfig config;
+
+        [NonSerialized] public MachineConfig config;//SerializeReference 存在bug，先不使用，即无法使用回滚
 
         #endregion raw data
 
@@ -296,6 +301,8 @@ namespace XMLib.AM
 
         public ActionEditorWindow()
         {
+            views = new List<IView>();
+
             globalActionListView = CreateView<GlobalActionListView<ControllerType, FloatType>>();
             globalActionSetView = CreateView<GlobalActionSetView<ControllerType, FloatType>>();
             actionListView = CreateView<ActionListView<ControllerType, FloatType>>();
@@ -330,6 +337,10 @@ namespace XMLib.AM
 
         private void OnDestroy()
         {
+            foreach (var view in views)
+            {
+                view.OnDestroy();
+            }
         }
 
         private void OnEnable()
@@ -346,21 +357,10 @@ namespace XMLib.AM
 
             SceneView.duringSceneGui += OnSceneGUI;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-
-
-            foreach (var view in views)
-            {
-                view.OnEnable();
-            }
         }
 
         private void OnDisable()
         {
-            foreach (var view in views)
-            {
-                view.OnDisable();
-            }
-
             SceneView.duringSceneGui -= OnSceneGUI;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
 
@@ -394,12 +394,9 @@ namespace XMLib.AM
 
             EventProcess();
 
-            foreach (var view in views)
-            {
-                view.OnRepaint();
-            }
-
             quickButtonHandler.OnGUI();
+
+            Repaint();
         }
 
         private void EventProcess()
@@ -476,7 +473,7 @@ namespace XMLib.AM
                 return;
             }
 
-            Undo.RecordObject(this, "ActionEditorWindow");
+            //Undo.RecordObject(this, "ActionEditorWindow");
 
             AEStyles.Begin();
             guiDrawer.OnSceneGUI(sceneView);
@@ -555,78 +552,23 @@ namespace XMLib.AM
         private static string copyData;
         private static Type copyDataType;
 
-        private void DrawView(IView<ControllerType, FloatType> view, Rect rect, bool checkConfig = true)
+        public object copyBuffer
         {
-            if (view.isPop)
+            set
             {
-                return;
+                if (value == null)
+                {
+                    copyDataType = null;
+                    copyData = null;
+                    return;
+                }
+                copyDataType = value.GetType();
+                copyData = DataUtility.ToJson(value, copyDataType);
             }
-
-            Rect contentRect = rect;
-
-            if (!string.IsNullOrEmpty(view.title))
+            get
             {
-                float titleHeight = 18f;
-                Rect titleRect = new Rect(rect.x, rect.y, rect.width, titleHeight);
-                contentRect = new Rect(rect.x, rect.y + titleHeight, rect.width, rect.height - titleHeight);
-
-                GUILayout.BeginArea(titleRect);
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Label(view.title, AEStyles.view_head);
-
-                if (view is IDataView<ControllerType, FloatType> dataView)
-                {
-                    if (GUILayout.Button("C", AEStyles.view_head, GUILayout.Width(20)))
-                    {
-                        GUI.FocusControl(null);
-                        object data = dataView.CopyData();
-                        if (data != null)
-                        {
-                            copyDataType = data.GetType();
-                            copyData = DataUtility.ToJson(data, copyDataType);
-                        }
-                    }
-
-                    if (GUILayout.Button("P", AEStyles.view_head, GUILayout.Width(20)))
-                    {
-                        GUI.FocusControl(null);
-                        if (copyData != null)
-                        {
-                            object data = DataUtility.FromJson(copyData, copyDataType);
-                            if (data != null)
-                            {
-                                dataView.PasteData(data);
-                            }
-                        }
-                    }
-                }
-
-                if (GUILayout.Button("S", AEStyles.view_head, GUILayout.Width(20)))
-                {
-                    GUI.FocusControl(null);
-                    ViewWindow.Show(view);
-                }
-
-                GUILayout.EndHorizontal();
-
-                GUILayout.EndArea();
-            }
-
-            GUI.Box(contentRect, GUIContent.none, AEStyles.view_bg);
-
-            if (!checkConfig || isConfigValid)
-            {
-                if (view.useAre)
-                {
-                    GUILayout.BeginArea(contentRect);
-                    view.OnGUI(contentRect);
-                    GUILayout.EndArea();
-                }
-                else
-                {
-                    view.OnGUI(contentRect);
-                }
+                if (copyDataType == null || copyData == null) { return null; }
+                return DataUtility.FromJson(copyData, copyDataType);
             }
         }
 
@@ -783,48 +725,66 @@ namespace XMLib.AM
 
             #region draw
 
-            DrawView(menuView, menuViewRect, false);
+            menuView.Draw(menuViewRect);
 
-            if ((setting.showView & ViewType.Frame) != 0)
+            if ((setting.showView & ViewType.Frame) != 0 && !frameListView.isPop)
             {
-                DrawView(frameListView, frameListViewRect);
+                frameListView.Draw(frameListViewRect);
             }
 
-            if ((setting.showView & ViewType.State) != 0)
+            if ((setting.showView & ViewType.State) != 0 && !stateListView.isPop)
             {
-                DrawView(stateListView, stateListViewRect);
+                stateListView.Draw(stateListViewRect);
             }
 
             if ((setting.showView & ViewType.GlobalAction) != 0)
             {
-                DrawView(globalActionSetView, globalActionSetViewRect);
-                DrawView(globalActionListView, globalActionListViewRect);
+                if (!globalActionSetView.isPop)
+                {
+                    globalActionSetView.Draw(globalActionSetViewRect);
+                }
+                if (!globalActionListView.isPop)
+                {
+                    globalActionListView.Draw(globalActionListViewRect);
+                }
             }
 
             Rect position = new Rect(startPosX + space, startPosY, width - space, height);
             Rect view = new Rect(startPosX + space, startPosY, nextPosX - startPosX - space, itemHeight);
             setting.otherViewScrollPos = GUI.BeginScrollView(position, setting.otherViewScrollPos, view, true, false);
 
-            if ((setting.showView & ViewType.StateSet) != 0)
+            if ((setting.showView & ViewType.StateSet) != 0 && !stateSetView.isPop)
             {
-                DrawView(stateSetView, stateSetViewRect);
+                stateSetView.Draw(stateSetViewRect);
             }
 
-            if ((setting.showView & ViewType.Tool) != 0)
+            if ((setting.showView & ViewType.Tool) != 0 && !toolView.isPop)
             {
-                DrawView(toolView, toolViewRect);
+                toolView.Draw(toolViewRect);
             }
 
             if ((setting.showView & ViewType.Action) != 0)
             {
-                DrawView(actionListView, actionListViewRect);
-                DrawView(actionSetView, actionSetViewRect);
+                if (!actionListView.isPop)
+                {
+                    actionListView.Draw(actionListViewRect);
+                }
+                if (!actionSetView.isPop)
+                {
+                    actionSetView.Draw(actionSetViewRect);
+                }
             }
 
             if ((setting.showView & ViewType.Other) != 0)
             {
-                DrawView(attackRangeListView, attackRangeListViewRect);
-                DrawView(bodyRangeListView, bodyRangeListViewRect);
+                if (!attackRangeListView.isPop)
+                {
+                    attackRangeListView.Draw(attackRangeListViewRect);
+                }
+                if (!bodyRangeListView.isPop)
+                {
+                    bodyRangeListView.Draw(bodyRangeListViewRect);
+                }
             }
             GUI.EndScrollView();
 
@@ -836,18 +796,47 @@ namespace XMLib.AM
 
     public class ViewWindow : EditorWindow
     {
-        IView view;
-        public static ViewWindow Show(IView view)
+        protected IView _view;
+        protected EditorWindow _win;
+        protected string _viewTypeName;
+        protected string _winTypeName;
+
+        public IView view
         {
-            var win = EditorWindow.CreateWindow<ViewWindow>(view.title);
-            win.Init(view);
-            win.Show();
-            return win;
+            get
+            {
+                if (_view != null && _win != null) { return _view; }
+
+                Type viewType = Type.GetType(_viewTypeName, false);
+                Type winType = Type.GetType(_winTypeName, false);
+                if (viewType == null || winType == null) { return null; }
+
+                if (!ActionEditorUtility.HasOpenInstances(winType)) { return null; }
+
+                _win = GetWindow(winType);
+                IActionEditorWindow win = _win as IActionEditorWindow;
+                if (win == null) { return null; }
+                _view = win.views.Find(t => t.GetType() == viewType);
+                _view.popWindow = this;
+                return _view;
+            }
+            set
+            {
+                _view = value;
+                _win = value.baseWindow as EditorWindow;
+                _viewTypeName = value.GetType().FullName + "," + value.GetType().Assembly.FullName;
+                _winTypeName = _win.GetType().FullName + "," + _win.GetType().Assembly.FullName;
+                _view.popWindow = this;
+            }
         }
 
-        private void Init(IView view)
+        public static ViewWindow Show(IView view, Rect rect)
         {
-            this.view = view;
+            var win = EditorWindow.CreateWindow<ViewWindow>(view.title);
+            win.position = rect;
+            win.view = view;
+            win.Show();
+            return win;
         }
 
         private void OnEnable()
@@ -861,28 +850,20 @@ namespace XMLib.AM
 
         private void OnDestroy()
         {
-            view.OnPopDestroy();
+            view?.OnPopDestroy();
         }
 
         private void OnGUI()
         {
             if (view == null)
             {
-                Close();
                 return;
             }
 
             Rect contentRect = new Rect(Vector2.zero, this.position.size);
-            if (view.useAre)
-            {
-                GUILayout.BeginArea(contentRect);
-                view.OnGUI(contentRect);
-                GUILayout.EndArea();
-            }
-            else
-            {
-                view.OnGUI(contentRect);
-            }
+            view.Draw(contentRect);
+
+            Repaint();
         }
     }
 }

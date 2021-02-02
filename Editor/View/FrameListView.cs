@@ -6,7 +6,6 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 using UnityEditor;
@@ -33,7 +32,7 @@ namespace XMLib.AM
 
         private float toolHeight = 22f;
 
-        public override void OnGUI(Rect rect)
+        protected override void OnGUI(Rect rect)
         {
             List<FrameConfig> frames = win.currentFrames;
             List<object> actions = win.currentActions;

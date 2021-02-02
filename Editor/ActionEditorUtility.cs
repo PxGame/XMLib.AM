@@ -5,9 +5,7 @@
  * 创建时间: 2019/10/30 11:07:10
  */
 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+using System;
 using UnityEngine;
 
 namespace XMLib.AM
@@ -17,6 +15,12 @@ namespace XMLib.AM
     /// </summary>
     public static class ActionEditorUtility
     {
+        public static bool HasOpenInstances(Type windowType)
+        {
+            UnityEngine.Object[] array = Resources.FindObjectsOfTypeAll(windowType);
+            return array != null && array.Length != 0;
+        }
+
         public static void ItemDrawer<T>(int index, ref bool selected, T obj)
         {
             if (GUILayout.Button($"{index}", selected ? AEStyles.item_head_select : AEStyles.item_head_normal, GUILayout.ExpandHeight(true), GUILayout.Width(15)))

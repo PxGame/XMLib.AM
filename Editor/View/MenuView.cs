@@ -19,14 +19,23 @@ namespace XMLib.AM
     [Serializable]
     public class MenuView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
     {
-     
+        public override bool checkConfig => false;
         public override string title => string.Empty;
         public override bool useAre => true;
         private string selectConfigName;
 
-        public override void OnGUI(Rect rect)
+        protected override void OnGUI(Rect rect)
         {
             GUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("关闭弹出窗口", GUILayout.Width(80)))
+            {
+                GUI.FocusControl(null);
+                foreach (var view in win.views)
+                {
+                    view.HidePopWindow();
+                }
+            }
 
             if (!win.isRunning)
             {

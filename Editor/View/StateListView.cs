@@ -6,8 +6,6 @@
  */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace XMLib.AM
@@ -23,7 +21,7 @@ namespace XMLib.AM
 
         private Vector2 scrollPos;
 
-        public override void OnGUI(Rect rect)
+        protected override void OnGUI(Rect rect)
         {
             GUILayout.BeginVertical(AEStyles.box);
             win.config.firstStateName = EditorGUILayoutEx.DrawObject("起始状态名", win.config.firstStateName);

@@ -6,9 +6,7 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace XMLib.AM
@@ -17,14 +15,14 @@ namespace XMLib.AM
     /// BodyRangeListView
     /// </summary>
     [Serializable]
-    public class BodyRangeListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType:struct
+    public class BodyRangeListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
     {
         public override string title => "身体范围";
 
         public override bool useAre => true;
         private Vector2 scrollPos;
 
-        public override void OnGUI(Rect rect)
+        protected override void OnGUI(Rect rect)
         {
             FrameConfig configs = win.currentFrame;
             if (null == configs)

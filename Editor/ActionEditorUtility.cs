@@ -28,7 +28,7 @@ namespace XMLib.AM
                 GUI.FocusControl(null);
                 selected = !selected;
             }
-            if (GUILayout.Button($"{obj?.GetType().Name}", selected ? AEStyles.item_body_select : AEStyles.item_body_normal, GUILayout.Height(30f), GUILayout.ExpandWidth(true)))
+            if (GUILayout.Button($"{obj?.GetType().GetSimpleName()}", selected ? AEStyles.item_body_select : AEStyles.item_body_normal, GUILayout.Height(30f), GUILayout.ExpandWidth(true)))
             {
                 GUI.FocusControl(null);
                 selected = !selected;

@@ -18,7 +18,7 @@ namespace XMLib.AM
     /// FrameListView
     /// </summary>
     [Serializable]
-    public class FrameListView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
+    public class FrameListView : IView
     {
         public override string title => $"帧序列({win.setting.frameRate}s)";
         public override bool useAre => false;

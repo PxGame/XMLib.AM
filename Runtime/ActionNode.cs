@@ -5,17 +5,38 @@
  * 创建时间: 2019/11/5 17:51:35
  */
 
+using System;
+
+
+#if USE_FIXPOINT
+using Single = FPPhysics.Fix64;
+using Vector2 = FPPhysics.Vector2;
+using Vector3 = FPPhysics.Vector3;
+using Quaternion = FPPhysics.Quaternion;
+using Matrix4x4 = FPPhysics.Matrix4x4;
+using Mathf = FPPhysics.FPUtility;
+using ControllerType = System.Object;
+#else
+using Single = System.Single;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+using Quaternion = UnityEngine.Quaternion;
+using Matrix4x4 = UnityEngine.Matrix4x4;
+using Mathf = UnityEngine.Mathf;
+using ControllerType = System.Object;
+#endif
+
 namespace XMLib.AM
 {
     /// <summary>
     /// ActionNode
     /// </summary>
-    public class ActionNode<ControllerType, FloatType> where FloatType : struct
+    public class ActionNode
     {
-        public IActionMachine<ControllerType, FloatType> actionMachine;
+        public IActionMachine actionMachine;
         public int beginFrameIndex;
         public object config;
-        public IActionHandler<ControllerType, FloatType> handler;
+        public IActionHandler handler;
         public object data;
         public bool isUpdating { get; private set; } = false;
         public int updateCnt { get; private set; } = 0;
@@ -49,7 +70,7 @@ namespace XMLib.AM
             isUpdating = false;
         }
 
-        public void InvokeUpdate(FloatType deltaTime)
+        public void InvokeUpdate(Single deltaTime)
         {
             if (!isUpdating)
             {

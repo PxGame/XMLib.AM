@@ -23,15 +23,6 @@ namespace XMLib.AM
         public static GUIStyle item_body_normal = new GUIStyle("ScrollViewAlt") { alignment = TextAnchor.MiddleLeft };
         public static GUIStyle item_body_select = new GUIStyle("TE ElementBackground") { alignment = TextAnchor.MiddleLeft };
         public static GUIStyle frame_label = "CN StatusWarn";
-
         public static GUIStyle box = "HelpBox";
-
-        public static void Begin()
-        {
-        }
-
-        public static void End()
-        {
-        }
     }
 }

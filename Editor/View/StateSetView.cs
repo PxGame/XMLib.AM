@@ -15,7 +15,7 @@ namespace XMLib.AM
     /// StateSetView
     /// </summary>
     [Serializable]
-    public class StateSetView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
+    public class StateSetView : IDataView
     {
         public override string title => "状态设置";
         public override bool useAre => true;

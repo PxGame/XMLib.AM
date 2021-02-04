@@ -1,9 +1,11 @@
 {
     "name": "XMLib.AM.Editor",
+    "rootNamespace": "",
     "references": [
         "XMLib.AM",
         "XMLib.Common",
-        "XMLib.Common.Editor"
+        "XMLib.Common.Editor",
+        "FPPhysics"
     ],
     "includePlatforms": [
         "Editor"
@@ -13,7 +15,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "USE_FIXPOINT"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

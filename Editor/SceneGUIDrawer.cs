@@ -11,14 +11,24 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+#if USE_FIXPOINT
+using Single = FPPhysics.Fix64;
+using Vector2 = FPPhysics.Vector2;
+using Vector3 = FPPhysics.Vector3;
+#else
+using Single = System.Single;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+#endif
+
 namespace XMLib.AM
 {
     /// <summary>
     /// SceneGUIDrawer
     /// </summary>
-    public class SceneGUIDrawer<ControllerType, FloatType> where FloatType : struct
+    public class SceneGUIDrawer
     {
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
+        public ActionEditorWindow win { get; set; }
 
         public void OnSceneGUI(SceneView sceneView)
         {
@@ -81,28 +91,28 @@ namespace XMLib.AM
             switch (config.value)
             {
                 case Ranges.RectItem v:
-                    HandlesDrawer.H.DrawRect(v.size, Matrix4x4.Translate(v.offset));
+                    HandlesDrawer.H.DrawRect(v.size, Matrix4x4.Translate((Vector3)v.offset));
                     break;
 
                 case Ranges.CircleItem v:
-                    HandlesDrawer.H.DrawCircle(v.radius, Matrix4x4.Translate(v.offset));
+                    HandlesDrawer.H.DrawCircle(v.radius, Matrix4x4.Translate((Vector3)v.offset));
                     break;
 
                 case Ranges.BoxItem v:
-                    HandlesDrawer.H.DrawBox(v.size, Matrix4x4.Translate(v.offset));
+                    HandlesDrawer.H.DrawBox(v.size, Matrix4x4.Translate((Vector3)v.offset));
                     break;
 
                 case Ranges.SphereItem v:
-                    HandlesDrawer.H.DrawSphere(v.radius, Matrix4x4.Translate(v.offset));
+                    HandlesDrawer.H.DrawSphere(v.radius, Matrix4x4.Translate((Vector3)v.offset));
                     break;
             }
             HandlesDrawer.H.fillColor = false;
             HandlesDrawer.H.PopColor();
         }
 
-        private float FixFloat(float v)
+        private Single FixFloat(float v)
         {
-            return (float)Math.Round(v, 3);
+            return (Single)Math.Round(v, 3);
         }
 
         private BoxBoundsHandle boxHandle = new BoxBoundsHandle();
@@ -116,13 +126,13 @@ namespace XMLib.AM
             switch (config)
             {
                 case Ranges.RectItem v:
-                    offset = v.offset;
-                    size = v.size;
+                    offset = (Vector2)v.offset;
+                    size = (Vector2)v.size;
                     break;
 
                 case Ranges.CircleItem v:
-                    offset = v.offset;
-                    size = new Vector3(v.radius, 0f, 0f);
+                    offset = (Vector2)v.offset;
+                    size = new Vector3(v.radius, 0, 0);
                     break;
 
                 case Ranges.BoxItem v:
@@ -132,7 +142,7 @@ namespace XMLib.AM
 
                 case Ranges.SphereItem v:
                     offset = v.offset;
-                    size = new Vector2(v.radius, 0f);
+                    size = new Vector2(v.radius, 0);
                     break;
 
                 default:
@@ -149,15 +159,19 @@ namespace XMLib.AM
                     break;
 
                 case Tool.Move:
-                    offset = Handles.DoPositionHandle(offset, Quaternion.identity);
+                    offset = (Vector3)Handles.DoPositionHandle(offset, Quaternion.identity);
                     break;
 
                 case Tool.Scale:
-                    size = Handles.DoScaleHandle(size, offset, Quaternion.identity, handleSize);
+                    size = (Vector3)Handles.DoScaleHandle(size, offset, Quaternion.identity, handleSize);
                     break;
 
                 case Tool.Transform:
-                    Handles.TransformHandle(ref offset, Quaternion.identity, ref size);
+                    UnityEngine.Vector3 _offset = offset;
+                    UnityEngine.Vector3 _size = size;
+                    Handles.TransformHandle(ref _offset, UnityEngine.Quaternion.identity, ref _size);
+                    offset = (Vector3)_offset;
+                    size = (Vector3)_size;
                     break;
 
                 case Tool.Rect:
@@ -170,8 +184,8 @@ namespace XMLib.AM
                                 boxHandle.center = offset;
                                 boxHandle.size = size;
                                 boxHandle.DrawHandle();
-                                offset = boxHandle.center;
-                                size = boxHandle.size;
+                                offset = (Vector3)boxHandle.center;
+                                size = (Vector3)boxHandle.size;
                                 break;
                             }
 
@@ -181,8 +195,8 @@ namespace XMLib.AM
                                 sphereHandle.center = offset;
                                 sphereHandle.radius = size.x;
                                 sphereHandle.DrawHandle();
-                                offset = sphereHandle.center;
-                                size.x = sphereHandle.radius;
+                                offset = (Vector3)sphereHandle.center;
+                                size.x = (Single)sphereHandle.radius;
                                 break;
                             }
                         case Ranges.BoxItem v:
@@ -191,8 +205,8 @@ namespace XMLib.AM
                                 boxHandle.center = offset;
                                 boxHandle.size = size;
                                 boxHandle.DrawHandle();
-                                offset = boxHandle.center;
-                                size = boxHandle.size;
+                                offset = (Vector3)boxHandle.center;
+                                size = (Vector3)boxHandle.size;
                                 break;
                             }
                         case Ranges.SphereItem v:
@@ -201,8 +215,8 @@ namespace XMLib.AM
                                 sphereHandle.center = offset;
                                 sphereHandle.radius = size.x;
                                 sphereHandle.DrawHandle();
-                                offset = sphereHandle.center;
-                                size.x = sphereHandle.radius;
+                                offset = (Vector3)sphereHandle.center;
+                                size.x = (Single)sphereHandle.radius;
                                 break;
                             }
                     }
@@ -214,7 +228,7 @@ namespace XMLib.AM
 
             Func<Vector3> getOffset = () => new Vector3(FixFloat(offset.x), FixFloat(offset.y), FixFloat(offset.z));
             Func<Vector3> getSize = () => new Vector3(FixFloat(size.x), FixFloat(size.y), FixFloat(size.z));
-            Func<float> getRadius = () => FixFloat(size.magnitude);
+            Func<Single> getRadius = () => FixFloat(size.magnitude);
 
             switch (config)
             {

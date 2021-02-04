@@ -16,7 +16,7 @@ namespace XMLib.AM
     /// ActionListView
     /// </summary>
     [Serializable]
-    public class ActionListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
+    public class ActionListView : IDataView
     {
         public override string title => "动作列表";
 

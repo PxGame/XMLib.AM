@@ -15,7 +15,7 @@ namespace XMLib.AM
     /// GlobalActionSetView
     /// </summary>
     [Serializable]
-    public class GlobalActionSetView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
+    public class GlobalActionSetView : IView 
     {
         public override string title => "全局动作设置";
         public override bool useAre => true;

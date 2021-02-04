@@ -9,12 +9,31 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+
+#if USE_FIXPOINT
+using Single = FPPhysics.Fix64;
+using Vector2 = FPPhysics.Vector2;
+using Vector3 = FPPhysics.Vector3;
+using Quaternion = FPPhysics.Quaternion;
+using Matrix4x4 = FPPhysics.Matrix4x4;
+using Mathf = FPPhysics.FPUtility;
+using ControllerType = System.Object;
+#else
+using Single = System.Single;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+using Quaternion = UnityEngine.Quaternion;
+using Matrix4x4 = UnityEngine.Matrix4x4;
+using Mathf = UnityEngine.Mathf;
+using ControllerType = System.Object;
+#endif
+
 namespace XMLib.AM
 {
     /// <summary>
     /// ActionMachineHelper
     /// </summary>
-    public class ActionMachineHelper<ControllerType, FloatType> where FloatType : struct
+    public class ActionMachineHelper
     {
         #region static
 
@@ -22,11 +41,11 @@ namespace XMLib.AM
 
         public static Dictionary<string, MachineConfig> loadedConfig => machineConfigDict;
 
-        private static Dictionary<Type, IActionHandler<ControllerType, FloatType>> actionHandlerDict = new Dictionary<Type, IActionHandler<ControllerType, FloatType>>();
+        private static Dictionary<Type, IActionHandler> actionHandlerDict = new Dictionary<Type, IActionHandler>();
         private static Dictionary<string, MachineConfig> machineConfigDict = new Dictionary<string, MachineConfig>();
         private static Dictionary<string, Dictionary<string, StateConfig>> stateConfigDict = new Dictionary<string, Dictionary<string, StateConfig>>();
 
-        private static Stack<ActionNode<ControllerType, FloatType>> actionNodePool = new Stack<ActionNode<ControllerType, FloatType>>();
+        private static Stack<ActionNode> actionNodePool = new Stack<ActionNode>();
 
         /// <summary>
         /// 初始化
@@ -34,7 +53,7 @@ namespace XMLib.AM
         /// <param name="loader"></param>
         public static void Init(Func<string, MachineConfig> loader)
         {
-            ActionMachineHelper<ControllerType, FloatType>.loader = loader;
+            ActionMachineHelper.loader = loader;
         }
 
         /// <summary>
@@ -42,9 +61,9 @@ namespace XMLib.AM
         /// </summary>
         /// <param name="type">配置文件类型</param>
         /// <returns>操作类</returns>
-        public static IActionHandler<ControllerType, FloatType> GetActionHandler(Type type)
+        public static IActionHandler GetActionHandler(Type type)
         {
-            IActionHandler<ControllerType, FloatType> handler = null;
+            IActionHandler handler = null;
 
             if (actionHandlerDict.TryGetValue(type, out handler))
             {
@@ -55,10 +74,10 @@ namespace XMLib.AM
 
             Type handlerType = config.handlerType;
 
-            handler = Activator.CreateInstance(handlerType) as IActionHandler<ControllerType, FloatType>;
+            handler = Activator.CreateInstance(handlerType) as IActionHandler;
             if (handler == null)
             {
-                throw new RuntimeException($"{handlerType} 类型未继承 {nameof(IActionHandler<ControllerType, FloatType>)} 接口");
+                throw new RuntimeException($"{handlerType} 类型未继承 {nameof(IActionHandler)} 接口");
             }
 
             actionHandlerDict.Add(type, handler);
@@ -121,14 +140,14 @@ namespace XMLib.AM
         /// 创建动作节点
         /// </summary>
         /// <returns>节点</returns>
-        public static ActionNode<ControllerType, FloatType> CreateActionNode()
+        public static ActionNode CreateActionNode()
         {
             if (actionNodePool.Count > 0)
             {
                 return actionNodePool.Pop();
             }
 
-            ActionNode<ControllerType, FloatType> node = new ActionNode<ControllerType, FloatType>();
+            ActionNode node = new ActionNode();
             return node;
         }
 
@@ -136,7 +155,7 @@ namespace XMLib.AM
         /// 回收动作节点
         /// </summary>
         /// <param name="node">节点</param>
-        public static void RecycleActionNode(ActionNode<ControllerType, FloatType> node)
+        public static void RecycleActionNode(ActionNode node)
         {
             node.Reset();
             actionNodePool.Push(node);

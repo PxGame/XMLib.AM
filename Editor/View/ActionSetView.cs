@@ -15,7 +15,7 @@ namespace XMLib.AM
     /// ActionSetView
     /// </summary>
     [Serializable]
-    public class ActionSetView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
+    public class ActionSetView : IView
     {
         public override string title => "动作设置";
 

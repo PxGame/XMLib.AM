@@ -1,7 +1,9 @@
 {
     "name": "XMLib.AM",
+    "rootNamespace": "",
     "references": [
-        "XMLib.Common"
+        "XMLib.Common",
+        "FPPhysics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -9,7 +11,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "USE_FIXPOINT"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

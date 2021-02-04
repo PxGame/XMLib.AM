@@ -7,6 +7,28 @@
 
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+#if USE_FIXPOINT
+using Single = FPPhysics.Fix64;
+using Vector2 = FPPhysics.Vector2;
+using Vector3 = FPPhysics.Vector3;
+using Quaternion = FPPhysics.Quaternion;
+using Matrix4x4 = FPPhysics.Matrix4x4;
+using Mathf = FPPhysics.FPUtility;
+using ControllerType = System.Object;
+#else
+using Single = System.Single;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+using Quaternion = UnityEngine.Quaternion;
+using Matrix4x4 = UnityEngine.Matrix4x4;
+using Mathf = UnityEngine.Mathf;
+using ControllerType = System.Object;
+#endif
+
 namespace XMLib.AM
 {
     /// <summary>
@@ -16,7 +38,7 @@ namespace XMLib.AM
     public class ActionMachineTest : MonoBehaviour
     {
         public TextAsset config;
-        public Matrix4x4 localToWorldMatrix => transform.localToWorldMatrix;
+        public UnityEngine.Matrix4x4 localToWorldMatrix => transform.localToWorldMatrix;
         public bool destroyOnPlay;
 
         private void Awake()

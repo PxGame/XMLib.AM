@@ -10,71 +10,24 @@ using UnityEngine;
 
 namespace XMLib.AM
 {
+    /// <summary>
+    /// IView
+    /// </summary>
     public abstract class IView
     {
         public abstract string title { get; }
         public virtual bool useAre { get; } = true;
 
-        protected abstract void OnGUI(Rect rect);
-
-        public abstract void OnUpdate();
-
-        public abstract IActionEditorWindow baseWindow { get; }
-
         public EditorWindow popWindow { get; set; }
-
         public bool isPop => popWindow != null;
 
         public Rect localRect { get; protected set; }
-        public Rect rect => new Rect(baseWindow.position.position + localRect.position, localRect.size);
+        public Rect rect => new Rect(win.position.position + localRect.position, localRect.size);
 
-        public virtual void Draw(Rect rect)
-        {
-            this.localRect = rect;
-            OnGUI(rect);
-        }
-
-        public void ShowPopWindow()
-        {
-            if (popWindow != null)
-            {
-                popWindow.Focus();
-                return;
-            }
-            ViewWindow.Show(this, rect);
-        }
-
-        public void HidePopWindow()
-        {
-            if (popWindow == null)
-            {
-                return;
-            }
-            popWindow.Close();
-            popWindow = null;
-        }
-
-        public virtual void OnDestroy()
-        {
-            HidePopWindow();
-        }
-
-        public void OnPopDestroy()
-        {
-            popWindow = null;
-        }
-    }
-
-    /// <summary>
-    /// IView
-    /// </summary>
-    public abstract class IView<ControllerType, FloatType> : IView where FloatType : struct
-    {
-        public override IActionEditorWindow baseWindow => win;
-        public ActionEditorWindow<ControllerType, FloatType> win { get; set; }
+        public ActionEditorWindow win { get; set; }
         public virtual bool checkConfig { get; } = true;
 
-        public override void Draw(Rect rect)
+        public void Draw(Rect rect)
         {
             this.localRect = rect;
             Rect contentRect = rect;
@@ -123,8 +76,42 @@ namespace XMLib.AM
             }
         }
 
+        protected abstract void OnGUI(Rect contentRect);
+        public abstract void OnUpdate();
+
         protected virtual void OnHeaderDraw()
         {
+        }
+
+
+        public void ShowPopWindow()
+        {
+            if (popWindow != null)
+            {
+                popWindow.Focus();
+                return;
+            }
+            ViewWindow.Show(this, rect);
+        }
+
+        public void HidePopWindow()
+        {
+            if (popWindow == null)
+            {
+                return;
+            }
+            popWindow.Close();
+            popWindow = null;
+        }
+
+        public virtual void OnDestroy()
+        {
+            HidePopWindow();
+        }
+
+        public void OnPopDestroy()
+        {
+            popWindow = null;
         }
     }
 }

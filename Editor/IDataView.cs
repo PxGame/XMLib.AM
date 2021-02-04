@@ -12,7 +12,7 @@ namespace XMLib.AM
     /// <summary>
     /// IDataView
     /// </summary>
-    public abstract class IDataView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
+    public abstract class IDataView : IView
     {
         public abstract object CopyData();
 

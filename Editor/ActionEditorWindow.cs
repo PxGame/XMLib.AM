@@ -26,17 +26,47 @@ namespace XMLib.AM
         Frame = 0b0100_0000,
     }
 
-    public interface IActionEditorWindow
-    {
-        List<IView> views { get; }
-        Rect position { get; set; }
-    }
-
     /// <summary>
     /// ActionEditorWindow
     /// </summary>
-    public class ActionEditorWindow<ControllerType, FloatType> : EditorWindow, IActionEditorWindow where FloatType : struct
+    public class ActionEditorWindow : EditorWindow
     {
+
+        [MenuItem("XMLib/动作编辑")]
+        public static void ShowEditor()
+        {
+            EditorWindow.GetWindow<ActionEditorWindow>();
+        }
+
+        public static void ShowEditor(GameObject target, TextAsset config)
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Debug.LogWarning("编辑器不能在运行时打开");
+                return;
+            }
+
+            var win = EditorWindow.GetWindow<ActionEditorWindow>();
+            if (win.configAsset != null)
+            {
+                if (win.configAsset == config)
+                {// 如果当前已打开的窗口相同，则focus,并直接返回
+                    win.Focus();
+                    return;
+                }
+                else
+                {
+                    //如果不相同，则创建一个新的窗口
+                    //win = EditorWindow.CreateWindow<ACActionEditorWindow>();
+                    //win.Show();
+                }
+            }
+
+            //更新参数
+            win.UpdateTarget(target);
+            win.UpdateConfig(config);
+        }
+
         /// <summary>
         /// 编辑器配置
         /// </summary>
@@ -61,26 +91,26 @@ namespace XMLib.AM
             public float frameWidth = 40;
             public float frameListViewRectHeight = 200f;
 
-            public ToolView<ControllerType, FloatType>.Setting toolView = new ToolView<ControllerType, FloatType>.Setting();
+            public ToolView.Setting toolView = new ToolView.Setting();
         }
 
-        [NonSerialized] public readonly ActionListView<ControllerType, FloatType> actionListView;
-        [NonSerialized] public readonly ActionSetView<ControllerType, FloatType> actionSetView;
-        [NonSerialized] public readonly GlobalActionListView<ControllerType, FloatType> globalActionListView;
-        [NonSerialized] public readonly GlobalActionSetView<ControllerType, FloatType> globalActionSetView;
-        [NonSerialized] public readonly AttackRangeListView<ControllerType, FloatType> attackRangeListView;
-        [NonSerialized] public readonly BodyRangeListView<ControllerType, FloatType> bodyRangeListView;
-        [NonSerialized] public readonly FrameListView<ControllerType, FloatType> frameListView;
-        [NonSerialized] public readonly StateListView<ControllerType, FloatType> stateListView;
-        [NonSerialized] public readonly StateSetView<ControllerType, FloatType> stateSetView;
-        [NonSerialized] public readonly MenuView<ControllerType, FloatType> menuView;
-        [NonSerialized] public readonly ToolView<ControllerType, FloatType> toolView;
+        [NonSerialized] public readonly ActionListView actionListView;
+        [NonSerialized] public readonly ActionSetView actionSetView;
+        [NonSerialized] public readonly GlobalActionListView globalActionListView;
+        [NonSerialized] public readonly GlobalActionSetView globalActionSetView;
+        [NonSerialized] public readonly AttackRangeListView attackRangeListView;
+        [NonSerialized] public readonly BodyRangeListView bodyRangeListView;
+        [NonSerialized] public readonly FrameListView frameListView;
+        [NonSerialized] public readonly StateListView stateListView;
+        [NonSerialized] public readonly StateSetView stateSetView;
+        [NonSerialized] public readonly MenuView menuView;
+        [NonSerialized] public readonly ToolView toolView;
 
         //[SerializeReference]
         public List<IView> views { get; private set; }
 
-        private readonly SceneGUIDrawer<ControllerType, FloatType> guiDrawer;
-        private readonly QuickButtonHandler<ControllerType, FloatType> quickButtonHandler;
+        private readonly SceneGUIDrawer guiDrawer;
+        private readonly QuickButtonHandler quickButtonHandler;
 
         #region style
 
@@ -303,23 +333,23 @@ namespace XMLib.AM
         {
             views = new List<IView>();
 
-            globalActionListView = CreateView<GlobalActionListView<ControllerType, FloatType>>();
-            globalActionSetView = CreateView<GlobalActionSetView<ControllerType, FloatType>>();
-            actionListView = CreateView<ActionListView<ControllerType, FloatType>>();
-            actionSetView = CreateView<ActionSetView<ControllerType, FloatType>>();
-            attackRangeListView = CreateView<AttackRangeListView<ControllerType, FloatType>>();
-            bodyRangeListView = CreateView<BodyRangeListView<ControllerType, FloatType>>();
-            frameListView = CreateView<FrameListView<ControllerType, FloatType>>();
-            stateListView = CreateView<StateListView<ControllerType, FloatType>>();
-            stateSetView = CreateView<StateSetView<ControllerType, FloatType>>();
-            menuView = CreateView<MenuView<ControllerType, FloatType>>();
-            toolView = CreateView<ToolView<ControllerType, FloatType>>();
+            globalActionListView = CreateView<GlobalActionListView>();
+            globalActionSetView = CreateView<GlobalActionSetView>();
+            actionListView = CreateView<ActionListView>();
+            actionSetView = CreateView<ActionSetView>();
+            attackRangeListView = CreateView<AttackRangeListView>();
+            bodyRangeListView = CreateView<BodyRangeListView>();
+            frameListView = CreateView<FrameListView>();
+            stateListView = CreateView<StateListView>();
+            stateSetView = CreateView<StateSetView>();
+            menuView = CreateView<MenuView>();
+            toolView = CreateView<ToolView>();
 
-            guiDrawer = new SceneGUIDrawer<ControllerType, FloatType>() { win = this };
-            quickButtonHandler = new QuickButtonHandler<ControllerType, FloatType>() { win = this };
+            guiDrawer = new SceneGUIDrawer() { win = this };
+            quickButtonHandler = new QuickButtonHandler() { win = this };
         }
 
-        private T CreateView<T>() where T : IView<ControllerType, FloatType>, new()
+        private T CreateView<T>() where T : IView, new()
         {
             T obj = new T();
             obj.win = this;
@@ -387,9 +417,7 @@ namespace XMLib.AM
         {
             Check();
             //Undo.RecordObject(this, "ActionEditorWindow");
-            AEStyles.Begin();
             Draw();
-            AEStyles.End();
             UpdateActionMachine();
 
             EventProcess();
@@ -425,7 +453,7 @@ namespace XMLib.AM
             }
 
             //更新标题
-            this.titleContent = new GUIContent(configAsset != null ? $"编辑 {configAsset.name} ({typeof(FloatType).Name})" : $"动作编辑器({typeof(FloatType).Name})");
+            this.titleContent = new GUIContent(configAsset != null ? $"编辑 {configAsset.name} " : $"动作编辑器");
         }
 
         public void UpdateTarget(GameObject target)
@@ -475,10 +503,8 @@ namespace XMLib.AM
 
             //Undo.RecordObject(this, "ActionEditorWindow");
 
-            AEStyles.Begin();
             guiDrawer.OnSceneGUI(sceneView);
             quickButtonHandler.OnSceneGUI(sceneView);
-            AEStyles.End();
 
             sceneView.Repaint();
             Repaint();
@@ -808,9 +834,8 @@ namespace XMLib.AM
     public class ViewWindow : EditorWindow
     {
         protected IView _view;
-        protected EditorWindow _win;
+        protected ActionEditorWindow _win;
         protected string _viewTypeName;
-        protected string _winTypeName;
 
         public IView view
         {
@@ -819,24 +844,20 @@ namespace XMLib.AM
                 if (_view != null && _win != null) { return _view; }
 
                 Type viewType = Type.GetType(_viewTypeName, false);
-                Type winType = Type.GetType(_winTypeName, false);
-                if (viewType == null || winType == null) { return null; }
+                if (viewType == null) { return null; }
 
-                if (!ActionEditorUtility.HasOpenInstances(winType)) { return null; }
+                if (!HasOpenInstances<ActionEditorWindow>()) { return null; }
 
-                _win = GetWindow(winType);
-                IActionEditorWindow win = _win as IActionEditorWindow;
-                if (win == null) { return null; }
-                _view = win.views.Find(t => t.GetType() == viewType);
+                _win = GetWindow<ActionEditorWindow>();
+                _view = _win.views.Find(t => t.GetType() == viewType);
                 _view.popWindow = this;
                 return _view;
             }
             set
             {
                 _view = value;
-                _win = value.baseWindow as EditorWindow;
+                _win = value.win;
                 _viewTypeName = value.GetType().FullName + "," + value.GetType().Assembly.FullName;
-                _winTypeName = _win.GetType().FullName + "," + _win.GetType().Assembly.FullName;
                 _view.popWindow = this;
             }
         }

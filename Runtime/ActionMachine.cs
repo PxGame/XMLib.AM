@@ -10,12 +10,31 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+
+#if USE_FIXPOINT
+using Single = FPPhysics.Fix64;
+using Vector2 = FPPhysics.Vector2;
+using Vector3 = FPPhysics.Vector3;
+using Quaternion = FPPhysics.Quaternion;
+using Matrix4x4 = FPPhysics.Matrix4x4;
+using Mathf = FPPhysics.FPUtility;
+using ControllerType = System.Object;
+#else
+using Single = System.Single;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+using Quaternion = UnityEngine.Quaternion;
+using Matrix4x4 = UnityEngine.Matrix4x4;
+using Mathf = UnityEngine.Mathf;
+using ControllerType = System.Object;
+#endif
+
 namespace XMLib.AM
 {
     /// <summary>
     /// ActionMachine
     /// </summary>
-    public class ActionMachine<ControllerType, FloatType> : IActionMachine<ControllerType, FloatType> where FloatType : struct
+    public class ActionMachine : IActionMachine
     {
         public int waitFrameCnt { get; set; }
         public int waitFrameDelay { get; set; }
@@ -24,7 +43,7 @@ namespace XMLib.AM
         public int stateBeginFrameIndex { get; protected set; }
 
         public int animIndex { get; protected set; }
-        public FloatType animStartTime { get; protected set; }
+        public Single animStartTime { get; protected set; }
 
         public string configName { get; protected set; }
 
@@ -38,8 +57,8 @@ namespace XMLib.AM
             }
         }
 
-        private List<ActionNode<ControllerType, FloatType>> globalActionNodes { get; set; } = new List<ActionNode<ControllerType, FloatType>>();
-        private List<ActionNode<ControllerType, FloatType>> actionNodes { get; set; } = new List<ActionNode<ControllerType, FloatType>>();
+        private List<ActionNode> globalActionNodes { get; set; } = new List<ActionNode>();
+        private List<ActionNode> actionNodes { get; set; } = new List<ActionNode>();
 
         public ActionMachineEvent eventTypes { get; protected set; }
 
@@ -47,7 +66,7 @@ namespace XMLib.AM
 
         public string nextStateName { get; protected set; }
         public int nextAnimIndex { get; protected set; }
-        public FloatType nextAnimStartTime { get; protected set; }
+        public Single nextAnimStartTime { get; protected set; }
         public int nextStatePriority { get; protected set; }
 
         protected bool isCacheSConfigDirty;
@@ -77,14 +96,14 @@ namespace XMLib.AM
 
         public MachineConfig GetMachineConfig()
         {
-            return cacheMConfig ?? (cacheMConfig = ActionMachineHelper<ControllerType, FloatType>.GetMachineConfig(configName));
+            return cacheMConfig ?? (cacheMConfig = ActionMachineHelper.GetMachineConfig(configName));
         }
 
         public StateConfig GetStateConfig()
         {
             if (isCacheSConfigDirty || cacheSConfig == null)
             {
-                cacheSConfig = ActionMachineHelper<ControllerType, FloatType>.GetStateConfig(configName, stateName);
+                cacheSConfig = ActionMachineHelper.GetStateConfig(configName, stateName);
                 isCacheSConfigDirty = false;
             }
 
@@ -139,7 +158,7 @@ namespace XMLib.AM
             return loopCnt;
         }
 
-        public void ChangeState(string stateName, int priority = 0, int animIndex = -1, FloatType animStartTime = default)
+        public void ChangeState(string stateName, int priority = 0, int animIndex = -1, Single animStartTime = default)
         {
             if (!string.IsNullOrEmpty(stateName) && priority < nextStatePriority)
             {
@@ -197,7 +216,7 @@ namespace XMLib.AM
             DisposeActions(globalActionNodes);
         }
 
-        public void LogicUpdate(FloatType deltaTime)
+        public void LogicUpdate(Single deltaTime)
         {
             InitializeValue();
             UpdateState();
@@ -208,7 +227,7 @@ namespace XMLib.AM
 
         #region action operations
 
-        private void InitializeActions(List<ActionNode<ControllerType, FloatType>> target, List<object> actions, int index)
+        private void InitializeActions(List<ActionNode> target, List<object> actions, int index)
         {
             for (int i = 0, count = actions.Count; i < count; i++)
             {
@@ -219,16 +238,16 @@ namespace XMLib.AM
 
             void AddAction(object action)
             {
-                ActionNode<ControllerType, FloatType> actionNode = ActionMachineHelper<ControllerType, FloatType>.CreateActionNode();
+                ActionNode actionNode = ActionMachineHelper.CreateActionNode();
                 actionNode.actionMachine = this;
                 actionNode.config = action;
                 actionNode.beginFrameIndex = index;
-                actionNode.handler = ActionMachineHelper<ControllerType, FloatType>.GetActionHandler(action.GetType());
+                actionNode.handler = ActionMachineHelper.GetActionHandler(action.GetType());
                 target.Add(actionNode);
             }
         }
 
-        private void DisposeActions(List<ActionNode<ControllerType, FloatType>> target)
+        private void DisposeActions(List<ActionNode> target)
         {
             for (int i = 0, count = target.Count; i < count; i++)
             {
@@ -238,17 +257,17 @@ namespace XMLib.AM
 
             return;
 
-            void RemoveAction(ActionNode<ControllerType, FloatType> action)
+            void RemoveAction(ActionNode action)
             {
                 if (action.isUpdating)
                 {
                     action.InvokeExit();
                 }
-                ActionMachineHelper<ControllerType, FloatType>.RecycleActionNode(action);
+                ActionMachineHelper.RecycleActionNode(action);
             }
         }
 
-        private void UpdateActions(List<ActionNode<ControllerType, FloatType>> target, FloatType deltaTime, int index)
+        private void UpdateActions(List<ActionNode> target, Single deltaTime, int index)
         {
             for (int i = 0, count = target.Count; i < count; i++)
             {
@@ -256,7 +275,7 @@ namespace XMLib.AM
             }
             return;
 
-            void UpdateAction(ActionNode<ControllerType, FloatType> action)
+            void UpdateAction(ActionNode action)
             {
                 if (action.config is IHoldFrames hold && hold.EnableBeginEnd())
                 {
@@ -301,7 +320,7 @@ namespace XMLib.AM
             //}
         }
 
-        private void UpdateGlobalFrame(FloatType deltaTime)
+        private void UpdateGlobalFrame(Single deltaTime)
         {
             //全局帧，不受顿帧影响
             globalFrameIndex++;
@@ -310,7 +329,7 @@ namespace XMLib.AM
             UpdateActions(globalActionNodes, deltaTime, globalFrameIndex);
         }
 
-        private void UpdateFrame(FloatType deltaTime)
+        private void UpdateFrame(Single deltaTime)
         {
             StateConfig sConfig = GetStateConfig();
             if (null == sConfig)

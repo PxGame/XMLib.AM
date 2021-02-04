@@ -17,7 +17,7 @@ namespace XMLib.AM
     /// MenuView
     /// </summary>
     [Serializable]
-    public class MenuView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
+    public class MenuView : IView
     {
         public override bool checkConfig => false;
         public override string title => string.Empty;
@@ -105,7 +105,7 @@ namespace XMLib.AM
             win.setting.showView = EditorGUILayoutEx.DrawObject("显示", win.setting.showView);
             GUILayout.FlexibleSpace();
 
-            string[] configNames = ActionMachineHelper<ControllerType, FloatType>.loadedConfig.Keys.ToArray();
+            string[] configNames = ActionMachineHelper.loadedConfig.Keys.ToArray();
             if (configNames == null || configNames.Length == 0)
             {
                 selectConfigName = string.Empty;
@@ -137,7 +137,7 @@ namespace XMLib.AM
             {
                 selectConfigName = configNames[index];
 
-                MachineConfig config = ActionMachineHelper<ControllerType, FloatType>.loadedConfig[selectConfigName];
+                MachineConfig config = ActionMachineHelper.loadedConfig[selectConfigName];
                 win.config = config;
             }
 

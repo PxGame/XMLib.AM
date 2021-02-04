@@ -20,7 +20,7 @@ namespace XMLib.AM
     /// ToolView
     /// </summary>
     [Serializable]
-    public class ToolView<ControllerType, FloatType> : IView<ControllerType, FloatType> where FloatType : struct
+    public class ToolView : IView
     {
         [Serializable]
         public class Setting

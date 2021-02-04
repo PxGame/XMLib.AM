@@ -15,7 +15,7 @@ namespace XMLib.AM
     /// BodyRangeListView
     /// </summary>
     [Serializable]
-    public class BodyRangeListView<ControllerType, FloatType> : IDataView<ControllerType, FloatType> where FloatType : struct
+    public class BodyRangeListView : IDataView
     {
         public override string title => "身体范围";
 

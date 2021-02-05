@@ -27,6 +27,32 @@ namespace XMLib.AM
     }
 
     /// <summary>
+    /// 编辑器配置
+    /// </summary>
+    [Serializable]
+    public partial class ActionEditorSetting
+    {
+        public int stateSelectIndex = -1;
+        public int attackRangeSelectIndex = -1;
+        public int bodyRangeSelectIndex = -1;
+        public int actionSelectIndex = -1;
+        public int globalActionSelectIndex = -1;
+        public int frameSelectIndex = -1;
+        public bool enableAllControl = false;
+        public bool enableQuickKey = false;
+
+        public ViewType showView;
+
+        public float frameRate => 0.033f;
+
+        public Vector2 otherViewScrollPos = Vector2.zero;
+
+        public float frameWidth = 40;
+        public float frameListViewRectHeight = 200f;
+    }
+
+
+    /// <summary>
     /// ActionEditorWindow
     /// </summary>
     public class ActionEditorWindow : EditorWindow
@@ -54,44 +80,17 @@ namespace XMLib.AM
                     win.Focus();
                     return;
                 }
-                else
+                /*else
                 {
                     //如果不相同，则创建一个新的窗口
-                    //win = EditorWindow.CreateWindow<ACActionEditorWindow>();
-                    //win.Show();
-                }
+                    win = EditorWindow.CreateWindow<ACActionEditorWindow>();
+                    win.Show();
+                }*/
             }
 
             //更新参数
             win.UpdateTarget(target);
             win.UpdateConfig(config);
-        }
-
-        /// <summary>
-        /// 编辑器配置
-        /// </summary>
-        [Serializable]
-        public class Setting
-        {
-            public int stateSelectIndex = -1;
-            public int attackRangeSelectIndex = -1;
-            public int bodyRangeSelectIndex = -1;
-            public int actionSelectIndex = -1;
-            public int globalActionSelectIndex = -1;
-            public int frameSelectIndex = -1;
-            public bool enableAllControl = false;
-            public bool enableQuickKey = false;
-
-            public ViewType showView;
-
-            public float frameRate => 0.033f;
-
-            public Vector2 otherViewScrollPos = Vector2.zero;
-
-            public float frameWidth = 40;
-            public float frameListViewRectHeight = 200f;
-
-            public ToolView.Setting toolView = new ToolView.Setting();
         }
 
         [NonSerialized] public readonly ActionListView actionListView;
@@ -137,7 +136,7 @@ namespace XMLib.AM
 
         protected static string settingPath = "XMLib.AM.ActionEditorWindow";
 
-        public Setting setting = new Setting();
+        public ActionEditorSetting setting = new ActionEditorSetting();
 
         public bool actionMachineDirty = false;
 
@@ -375,6 +374,8 @@ namespace XMLib.AM
 
         private void OnEnable()
         {
+            this.titleContent = new GUIContent("动作编辑器");
+
             //加载配置
             string data = EditorUserSettings.GetConfigValue(settingPath);
             if (!string.IsNullOrEmpty(data))
@@ -387,6 +388,11 @@ namespace XMLib.AM
 
             SceneView.duringSceneGui += OnSceneGUI;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+
+            if (config == null && configAsset != null)
+            {
+                UpdateConfig(configAsset);
+            }
         }
 
         private void OnDisable()
@@ -453,7 +459,7 @@ namespace XMLib.AM
             }
 
             //更新标题
-            this.titleContent = new GUIContent(configAsset != null ? $"编辑 {configAsset.name} " : $"动作编辑器");
+            //this.titleContent = new GUIContent(configAsset != null ? $"编辑 {configAsset.name} " : $"动作编辑器");
         }
 
         public void UpdateTarget(GameObject target)

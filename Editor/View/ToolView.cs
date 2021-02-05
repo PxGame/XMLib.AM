@@ -12,8 +12,9 @@ using UnityEngine;
 
 namespace XMLib.AM
 {
-    public partial class Setting
+    public partial class ActionEditorSetting
     {
+        public ToolView.Setting toolView = new ToolView.Setting();
     }
 
     /// <summary>

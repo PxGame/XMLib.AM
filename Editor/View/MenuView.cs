@@ -83,14 +83,20 @@ namespace XMLib.AM
             win.actionMachineObj = (GameObject)EditorGUILayout.ObjectField(win.actionMachineObj, typeof(GameObject), true);
             if (EditorGUI.EndChangeCheck() && win.actionMachineObj != null)
             {
-                win.UpdateTarget(win.actionMachineObj);
+                if (win.actionMachineObj != null)
+                {
+                    win.UpdateTarget(win.actionMachineObj);
+                }
             }
 
             EditorGUI.BeginChangeCheck();
             win.configAsset = (TextAsset)EditorGUILayout.ObjectField(win.configAsset, typeof(TextAsset), false);
             if (EditorGUI.EndChangeCheck())
             {
-                win.UpdateConfig(win.configAsset);
+                if (win.configAsset != null)
+                {
+                    win.UpdateConfig(win.configAsset);
+                }
             }
 
             if (GUILayout.Button("创建", GUILayout.Width(80)))

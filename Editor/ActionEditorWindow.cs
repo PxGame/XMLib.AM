@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using XMLib.Extensions;
 
 namespace XMLib.AM
 {
@@ -51,13 +52,11 @@ namespace XMLib.AM
         public float frameListViewRectHeight = 200f;
     }
 
-
     /// <summary>
     /// ActionEditorWindow
     /// </summary>
     public class ActionEditorWindow : EditorWindow
     {
-
         [MenuItem("XMLib/动作编辑")]
         public static void ShowEditor()
         {
@@ -142,6 +141,7 @@ namespace XMLib.AM
 
         public bool isRunning => EditorApplication.isPlaying;
 
+        public string lastEditorTargetPath = null;
         public GameObject actionMachineObj = null;
         public ActionMachineTest actionMachine = null;
         public TextAsset configAsset = null;
@@ -415,6 +415,25 @@ namespace XMLib.AM
                     actionMachine = null;
                     configAsset = null;
                     config = null;
+                    break;
+
+                case PlayModeStateChange.EnteredEditMode:
+                    //还原最后的选择
+                    GameObject obj;
+                    ActionMachineTest amTest;
+                    if (!string.IsNullOrEmpty(lastEditorTargetPath)
+                        && (obj = GameObject.Find(lastEditorTargetPath)) != null
+                        && (amTest = obj.GetComponent<ActionMachineTest>()) != null)
+                    {
+                        UpdateTarget(obj);
+                        UpdateConfig(amTest.config);
+                    }
+                    lastEditorTargetPath = string.Empty;
+                    break;
+
+                case PlayModeStateChange.ExitingEditMode:
+                    //记录最后的选择
+                    lastEditorTargetPath = actionMachineObj?.GetScenePath();
                     break;
             }
         }

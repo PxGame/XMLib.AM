@@ -269,21 +269,47 @@ namespace XMLib.AM
         public object currentAction => GetSelectItem(actionSelectIndex, currentActions);
         public object currentGlobalAction => GetSelectItem(globalActionSelectIndex, currentGlobalActions);
 
-        public List<RangeConfig> FindStayBodyRangeStartWith(int frameIndex, bool copyNew = false)
+        #region  attack range
+        public List<RangeConfig> FindStayAttackRangeStartWith(int frameIndex, bool copyNew = false)
         {
-            FrameConfig config = null;
             StateConfig state = currentState;
-            while (frameIndex >= 0)
+            FrameConfig config = state.GetAttackRangesFrame(frameIndex);
+            List<RangeConfig> result = copyNew ? config?.CopyAttackRanges() : config?.attackRanges;
+            return result;
+        }
+
+        public List<RangeConfig> FindStayAttackRangeFromCurrent(bool copyNew = false)
+        {
+            return FindStayAttackRangeStartWith(frameSelectIndex, copyNew);
+        }
+
+        public void CopyAttackRangeToCurrentFrameIfStay()
+        {
+            FrameConfig config = currentFrame;
+            if (config == null || !config.stayAttackRange)
             {
-                FrameConfig frame = state.frames[frameIndex];
-                if (!frame.stayBodyRange)
-                {
-                    config = frame;
-                    break;
-                }
-                frameIndex--;
+                return;
             }
 
+            List<RangeConfig> target = FindStayAttackRangeStartWith(frameSelectIndex);
+            if (target == null)
+            {
+                config.attackRanges = new List<RangeConfig>();
+                return;
+            }
+
+            config.CopyAttackRangeFrom(target);
+            config.stayAttackRange = false;
+        }
+
+        #endregion
+
+        #region  body range
+
+        public List<RangeConfig> FindStayBodyRangeStartWith(int frameIndex, bool copyNew = false)
+        {
+            StateConfig state = currentState;
+            FrameConfig config = state.GetBodyRangesFrame(frameIndex);
             List<RangeConfig> result = copyNew ? config?.CopyBodyRanges() : config?.bodyRanges;
             return result;
         }
@@ -311,6 +337,7 @@ namespace XMLib.AM
             config.CopyBodyRangeFrom(target);
             config.stayBodyRange = false;
         }
+        #endregion
 
         private int CheckSelectIndex<T>(ref int index, IList<T> list)
         {

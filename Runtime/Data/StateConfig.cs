@@ -58,8 +58,13 @@ namespace XMLib.AM
             return animNames?.Count > index ? animNames[index] : string.Empty;
         }
 
-        public List<RangeConfig> GetBodyRanges(int frameIndex)
+        public FrameConfig GetBodyRangesFrame(int frameIndex)
         {
+            if (frames.Count == 0 || frameIndex < 0)
+            {
+                return null;
+            }
+
             frameIndex %= frames.Count;
             FrameConfig config = frames[frameIndex];
 
@@ -73,7 +78,40 @@ namespace XMLib.AM
                 config = frames[frameIndex];
             }
 
-            return config.bodyRanges;
+            return config;
+        }
+
+        public List<RangeConfig> GetBodyRanges(int frameIndex)
+        {
+            return GetBodyRangesFrame(frameIndex)?.bodyRanges;
+        }
+
+        public FrameConfig GetAttackRangesFrame(int frameIndex)
+        {
+            if (frames.Count == 0 || frameIndex < 0)
+            {
+                return null;
+            }
+
+            frameIndex %= frames.Count;
+            FrameConfig config = frames[frameIndex];
+
+            while (config.stayAttackRange)
+            {
+                --frameIndex;
+                if (frameIndex < 0)
+                {
+                    return null;
+                }
+                config = frames[frameIndex];
+            }
+
+            return config;
+        }
+
+        public List<RangeConfig> GetAttackRanges(int frameIndex)
+        {
+            return GetAttackRangesFrame(frameIndex)?.attackRanges;
         }
     }
 }

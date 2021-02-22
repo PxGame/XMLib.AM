@@ -40,9 +40,20 @@ namespace XMLib.AM
                 return;
             }
 
-            if (config.attackRanges != null)
+            if (config.stayAttackRange)
+            {//保持范围的时候，不可以设置
+                List<RangeConfig> attackRanges = win.FindStayAttackRangeStartWith(win.frameSelectIndex);
+                if (attackRanges != null)
+                {
+                    ProcessRanges(attackRanges, localToWorld, false, -1, new Color(1, 0, 0, 0.25f));
+                }
+            }
+            else
             {
-                ProcessRanges(config.attackRanges, localToWorld, true, win.attackRangeSelectIndex, new Color(1, 0, 0, 0.25f));
+                if (config.attackRanges != null)
+                {
+                    ProcessRanges(config.attackRanges, localToWorld, true, win.attackRangeSelectIndex, new Color( 1, 0, 0, 0.25f));
+                }
             }
 
             if (config.stayBodyRange)

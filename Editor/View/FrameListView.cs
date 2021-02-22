@@ -121,7 +121,10 @@ namespace XMLib.AM
 
                 FrameConfig config = win.currentFrames[i];
 
-                string title = string.Format("{0}\n{1}|{2}", i, config.attackRanges?.Count ?? 0, config.stayBodyRange ? "←" : (config.bodyRanges?.Count ?? 0).ToString());
+                string title = string.Format("{0}\n{1}|{2}",
+                 i, 
+                 config.stayAttackRange ? "←" : (config.attackRanges?.Count ?? 0).ToString(),
+                 config.stayBodyRange ? "←" : (config.bodyRanges?.Count ?? 0).ToString());
                 if (GUI.Button(btnRt, title, selected ? AEStyles.item_head_select : AEStyles.item_head_normal))
                 {
                     win.frameSelectIndex = selected ? -1 : i;

@@ -25,18 +25,36 @@ namespace XMLib.AM
 
         protected override void OnGUI(Rect rect)
         {
-            List<RangeConfig> configs = win.currentAttackRanges;
+            FrameConfig configs = win.currentFrame;
             if (null == configs)
             {
                 return;
             }
 
-            EditorGUI.BeginChangeCheck();
-            win.attackRangeSelectIndex = EditorGUILayoutEx.DrawList(configs, win.attackRangeSelectIndex, ref scrollPos, NewRange, ActionEditorUtility.RangeConfigDrawer);
-            if (EditorGUI.EndChangeCheck())
+            bool lastStay = configs.stayAttackRange;
+
+            GUILayout.BeginVertical(AEStyles.box);
+            bool nextStay = EditorGUILayoutEx.DrawObject("保持上一帧", lastStay);
+            GUILayout.EndVertical();
+
+            if (nextStay)
             {
-                //win.configModification = true;
+                if (!lastStay)
+                {
+                    configs.attackRanges.Clear();
+                    win.attackRangeSelectIndex = -1;
+                }
             }
+            else
+            {
+                if (lastStay)
+                {//从保持到非保持，则拷贝保持的范围到当前
+                    win.CopyAttackRangeToCurrentFrameIfStay();
+                }
+                win.attackRangeSelectIndex = EditorGUILayoutEx.DrawList(configs.attackRanges, win.attackRangeSelectIndex, ref scrollPos, NewRange, ActionEditorUtility.RangeConfigDrawer);
+            }
+            configs.stayAttackRange = nextStay;//处理完之后再设置，否者CopyAttackRangeToCurrentFrameIfStay不会执行
+        
         }
 
         private void NewRange(Action<RangeConfig> adder)

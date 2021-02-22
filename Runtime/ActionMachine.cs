@@ -158,6 +158,20 @@ namespace XMLib.AM
             return loopCnt;
         }
 
+        public List<RangeConfig> GetAttackRanges()
+        {
+            StateConfig sconfig = GetStateConfig();
+            List<RangeConfig> ranges = sconfig.GetAttackRanges(GetStateFrameIndex());
+            return ranges;
+        }
+
+        public List<RangeConfig> GetBodyRanges()
+        {
+            StateConfig sconfig = GetStateConfig();
+            List<RangeConfig> ranges = sconfig.GetBodyRanges(GetStateFrameIndex());
+            return ranges;
+        }
+
         public void ChangeState(string stateName, int priority = 0, int animIndex = -1, Single animStartTime = default)
         {
             if (!string.IsNullOrEmpty(stateName) && priority < nextStatePriority)

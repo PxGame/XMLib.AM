@@ -132,16 +132,25 @@ namespace XMLib.AM
                 DeleteRangeFrame();
             }
 
-            if (GUILayout.Button("设置使用上一帧范围"))
+            if (GUILayout.Button("保持上一帧范围"))
             {
                 for (int i = setting.fromIndex; i <= setting.toIndex; i++)
                 {
                     FrameConfig config = win.currentFrames[i];
-                    config.bodyRanges.Clear();
-                    config.stayBodyRange = true;
+
+                    if(setting.copyAttackRanges)
+                    {
+                        config.attackRanges.Clear();
+                        config.stayAttackRange = true;
+                    }
+                    
+                    if(setting.copyBodyRanges)
+                    {
+                        config.bodyRanges.Clear();
+                        config.stayBodyRange = true;
+                    }
                 }
             }
-
             GUILayout.Space(4f);
 
             GUILayout.Label("操作选项");
@@ -184,7 +193,7 @@ namespace XMLib.AM
 
             int prevIndex = win.frameSelectIndex - 1;
             FrameConfig prevFrame = win.currentFrames[prevIndex];
-            List<RangeConfig> attackRanges = setting.copyAttackRanges ? prevFrame.attackRanges : null;
+            List<RangeConfig> attackRanges = setting.copyAttackRanges ?  win.FindStayAttackRangeStartWith(prevIndex)  : null;
             List<RangeConfig> bodyRanges = setting.copyBodyRanges ? win.FindStayBodyRangeStartWith(prevIndex) : null;
 
             if (setting.copyAttackRanges)
@@ -214,7 +223,7 @@ namespace XMLib.AM
             }
 
             FrameConfig frame = win.currentFrame;
-            List<RangeConfig> attackRanges = setting.copyAttackRanges ? frame.CopyAttackRanges() : null;//拷贝一遍，防止修改的列表为当前被拷贝的列表
+            List<RangeConfig> attackRanges = setting.copyAttackRanges ? win.FindStayAttackRangeFromCurrent(true) : null;
             List<RangeConfig> bodyRanges = setting.copyBodyRanges ? win.FindStayBodyRangeFromCurrent(true) : null;
 
             for (int i = setting.fromIndex; i <= setting.toIndex; i++)
@@ -245,7 +254,7 @@ namespace XMLib.AM
             }
 
             FrameConfig frame = win.currentFrame;
-            List<RangeConfig> attackRanges = setting.copyAttackRanges ? frame.attackRanges : null;
+            List<RangeConfig> attackRanges = setting.copyAttackRanges ? win.FindStayAttackRangeFromCurrent() : null;
             List<RangeConfig> bodyRanges = setting.copyBodyRanges ? win.FindStayBodyRangeFromCurrent() : null;
 
             if (forward || win.frameSelectIndex < win.currentFrames.Count - 1)
@@ -275,7 +284,7 @@ namespace XMLib.AM
             if (win.frameSelectIndex >= 0)
             {
                 FrameConfig frame = win.currentFrame;
-                attackRanges = setting.copyAttackRanges ? frame.attackRanges : null;
+                attackRanges = setting.copyAttackRanges ? win.FindStayAttackRangeFromCurrent() : null;
                 bodyRanges = setting.copyBodyRanges ? win.FindStayBodyRangeFromCurrent() : null;
             }
 

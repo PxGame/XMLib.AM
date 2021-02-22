@@ -33,6 +33,7 @@ namespace XMLib.AM
     [System.Serializable]
     public class FrameConfig
     {
+        public bool stayAttackRange;
         public bool stayBodyRange;
         public List<RangeConfig> attackRanges = new List<RangeConfig>();
         public List<RangeConfig> bodyRanges = new List<RangeConfig>();
@@ -80,6 +81,7 @@ namespace XMLib.AM
             {
                 attackRanges.Add(new RangeConfig(item));
             }
+            stayAttackRange = false;
         }
 
         public void CopyBodyRangeFrom(List<RangeConfig> ranges)

@@ -6,6 +6,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 
 
 #if USE_FIXPOINT
@@ -75,6 +76,8 @@ namespace XMLib.AM
 
         int GetStateLoopCnt();
 
+        List<RangeConfig> GetAttackRanges();
+        List<RangeConfig> GetBodyRanges();
 
         void Destroy();
 

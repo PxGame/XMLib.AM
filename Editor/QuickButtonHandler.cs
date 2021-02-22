@@ -207,9 +207,16 @@ namespace XMLib.AM
             GUILayout.FlexibleSpace();
 
             FrameConfig frameConfig = win.currentFrame;
-            if (frameConfig != null && frameConfig.stayBodyRange)
+            if (frameConfig != null)
             {
-                EditorGUILayout.HelpBox("身体范围为保持状态，不可编辑", UnityEditor.MessageType.Warning);
+                if (frameConfig.stayAttackRange)
+                {
+                    EditorGUILayout.HelpBox("攻击范围为保持状态，不可编辑", UnityEditor.MessageType.Warning);
+                }
+                if (frameConfig.stayBodyRange)
+                {
+                    EditorGUILayout.HelpBox("身体范围为保持状态，不可编辑", UnityEditor.MessageType.Warning);
+                }
             }
 
             GUI.DragWindow();

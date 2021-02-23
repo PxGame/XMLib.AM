@@ -10,8 +10,8 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-
 #if USE_FIXPOINT
+
 using Single = FPPhysics.Fix64;
 using Vector2 = FPPhysics.Vector2;
 using Vector3 = FPPhysics.Vector3;
@@ -19,6 +19,7 @@ using Quaternion = FPPhysics.Quaternion;
 using Matrix4x4 = FPPhysics.Matrix4x4;
 using Mathf = FPPhysics.FPUtility;
 using ControllerType = System.Object;
+
 #else
 using Single = System.Single;
 using Vector2 = UnityEngine.Vector2;
@@ -36,6 +37,7 @@ namespace XMLib.AM
     /// </summary>
     public class ActionMachine : IActionMachine
     {
+        public bool isDebug { get; set; }
         public int waitFrameCnt { get; set; }
         public int waitFrameDelay { get; set; }
         public int frameIndex { get; protected set; }
@@ -91,7 +93,7 @@ namespace XMLib.AM
         public void ReplayAnim()
         {
             eventTypes |= ActionMachineEvent.AnimChanged;
-            eventTypes |= ~ActionMachineEvent.HoldAnimDuration;
+            eventTypes &= ~ActionMachineEvent.HoldAnimDuration;
         }
 
         public MachineConfig GetMachineConfig()
@@ -183,6 +185,13 @@ namespace XMLib.AM
             nextStatePriority = priority;
             nextAnimIndex = animIndex;
             nextAnimStartTime = animStartTime;
+
+#if UNITY_EDITOR
+            if (isDebug)
+            {
+                SuperLog.Log($"ChangeState {this.stateName}=>{nextStateName}");
+            }
+#endif
         }
 
         public void Initialize(string configName, ControllerType controller)
@@ -390,6 +399,13 @@ namespace XMLib.AM
             {
                 return;
             }
+
+#if UNITY_EDITOR
+            if (isDebug)
+            {
+                SuperLog.Log($"UpdateState {this.stateName}=>{nextStateName}");
+            }
+#endif
 
             stateName = nextStateName;//设置新的状态
             stateBeginFrameIndex = frameIndex + 1;//状态起始帧

@@ -28,7 +28,7 @@ namespace XMLib.AM
         {
             GUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("关闭弹出窗口", GUILayout.Width(80)))
+            if (GUILayout.Button("关闭弹出", GUILayout.Width(80)))
             {
                 GUI.FocusControl(null);
                 foreach (var view in win.views)
@@ -56,8 +56,13 @@ namespace XMLib.AM
 
             if (GUILayout.Button("保存", GUILayout.Width(80)))
             {
-                SaveConfig();
                 GUI.FocusControl(null);
+                SaveConfig();
+            }
+            if (GUILayout.Button("保存到", GUILayout.Width(80)))
+            {
+                GUI.FocusControl(null);
+                SaveConfigToSelect(win.config);
             }
             if (GUILayout.Button("还原修改", GUILayout.Width(80)))
             {
@@ -147,8 +152,14 @@ namespace XMLib.AM
                 win.config = config;
             }
 
-            if (GUILayout.Button("另存", GUILayout.Width(100)))
+            if (GUILayout.Button("覆盖到", GUILayout.Width(80)))
             {
+                GUI.FocusControl(null);
+                SaveConfigToSelect(win.config);
+            }
+            if (GUILayout.Button("另存到", GUILayout.Width(100)))
+            {
+                GUI.FocusControl(null);
                 CopyToNew(win.config);
             }
         }
@@ -231,6 +242,27 @@ namespace XMLib.AM
             AssetDatabase.Refresh();
 
             Debug.Log($"配置已拷贝到 : {filePath}");
+        }
+
+        private void SaveConfigToSelect(MachineConfig config)
+        {
+            string filePath = EditorUtilityEx.GetSelectFile(".bytes");
+            if (string.IsNullOrEmpty(filePath))
+            {
+                Debug.LogWarning("选择的文件无效，写入失败");
+                return;
+            }
+
+            if (!EditorUtility.DisplayDialog("提示", $"是否将当前配置覆盖到选择文件?\n{filePath}", "是", "否"))
+            {
+                return;
+            }
+
+            string data = DataUtility.ToJson(config);
+            File.WriteAllText(filePath, data);
+            AssetDatabase.Refresh();
+
+            Debug.Log($"配置已覆盖到 : {filePath}");
         }
 
         public override void OnUpdate()

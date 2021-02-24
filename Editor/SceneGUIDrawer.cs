@@ -97,8 +97,8 @@ namespace XMLib.AM
 
         private void DrawRange(int index, RangeConfig config, Color color)
         {
-            HandlesDrawer.H.PushAndSetColor(color);
-            HandlesDrawer.H.fillColor = true;
+            HandlesDrawer.H.PushColor(color);
+            HandlesDrawer.H.fillPolygon = true;
             switch (config.value)
             {
                 case Ranges.RectItem v:
@@ -117,7 +117,7 @@ namespace XMLib.AM
                     HandlesDrawer.H.DrawSphere(v.radius, Matrix4x4.Translate((Vector3)v.offset));
                     break;
             }
-            HandlesDrawer.H.fillColor = false;
+            HandlesDrawer.H.fillPolygon = false;
             HandlesDrawer.H.PopColor();
         }
 

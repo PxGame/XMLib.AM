@@ -80,7 +80,7 @@ namespace XMLib.AM
         public class CircleItem : IItem
         {
             public Vector2 offset = Vector2.up;
-            public Single radius = 1m;
+            public Single radius = 1;
 
             public IItem Clone()
             {
@@ -112,7 +112,7 @@ namespace XMLib.AM
         public class SphereItem : IItem
         {
             public Vector3 offset = Vector3.up;
-            public Single radius = 1m;
+            public Single radius = 1;
 
             public IItem Clone()
             {

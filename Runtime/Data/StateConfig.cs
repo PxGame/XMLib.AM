@@ -8,8 +8,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 #if USE_FIXPOINT
 using Single = FPPhysics.Fix64;
 using Vector2 = FPPhysics.Vector2;
@@ -19,6 +17,7 @@ using Matrix4x4 = FPPhysics.Matrix4x4;
 using Mathf = FPPhysics.FPUtility;
 using ControllerType = System.Object;
 #else
+
 using Single = System.Single;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
@@ -26,6 +25,7 @@ using Quaternion = UnityEngine.Quaternion;
 using Matrix4x4 = UnityEngine.Matrix4x4;
 using Mathf = UnityEngine.Mathf;
 using ControllerType = System.Object;
+
 #endif
 
 namespace XMLib.AM
@@ -39,7 +39,7 @@ namespace XMLib.AM
         public string stateName = "State";
         public List<string> animNames;
         public int dafualtAnimIndex = 0;
-        public Single fadeTime = 0.05m;
+        public Single fadeTime = 1 / (Single)20;
         public bool enableLoop = false;
         public string nextStateName = "";
         public int nextAnimIndex = -1;

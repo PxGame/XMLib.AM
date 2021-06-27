@@ -2,8 +2,8 @@
   "name": "com.peterxiang.xmlib.am",
   "version": "1.0.1",
   "displayName": "XMLib Action Machine",
-  "description": "XMLib 动作游戏开发套件",
-  "unity": "2019.1",
+  "description": "XMLib \u52a8\u4f5c\u6e38\u620f\u5f00\u53d1\u5957\u4ef6",
+  "unity": "2019.3",
   "dependencies": {
     "com.peterxiang.xmlib.common": "1.0.1"
   },

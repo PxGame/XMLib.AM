@@ -116,7 +116,7 @@ namespace XMLib.AM
             win.setting.showView = EditorGUILayoutEx.DrawObject("显示", win.setting.showView);
             GUILayout.FlexibleSpace();
 
-            string[] configNames = ActionMachineHelper.loadedConfig.Keys.ToArray();
+            string[] configNames = Deprecated.ActionMachineHelper.loadedConfig.Keys.ToArray();
             if (configNames == null || configNames.Length == 0)
             {
                 selectConfigName = string.Empty;
@@ -148,7 +148,7 @@ namespace XMLib.AM
             {
                 selectConfigName = configNames[index];
 
-                MachineConfig config = ActionMachineHelper.loadedConfig[selectConfigName];
+                MachineConfig config = Deprecated.ActionMachineHelper.loadedConfig[selectConfigName];
                 win.config = config;
             }
 

@@ -19,6 +19,7 @@ using Mathf = FPPhysics.FPUtility;
 using ControllerType = System.Object;
 
 #else
+
 using Single = System.Single;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
@@ -26,9 +27,10 @@ using Quaternion = UnityEngine.Quaternion;
 using Matrix4x4 = UnityEngine.Matrix4x4;
 using Mathf = UnityEngine.Mathf;
 using ControllerType = System.Object;
+
 #endif
 
-namespace XMLib.AM
+namespace XMLib.AM.Deprecated
 {
     [Flags]
     public enum ActionMachineEvent
@@ -80,6 +82,7 @@ namespace XMLib.AM
         int GetStateLoopCnt();
 
         List<RangeConfig> GetAttackRanges();
+
         List<RangeConfig> GetBodyRanges();
 
         void Destroy();
